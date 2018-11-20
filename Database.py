@@ -1,6 +1,7 @@
 import sqlite3
 from trainer import Trainer
 from pokemon import Pokemon
+import sys
 
 #con=sqlite3.connect('pokemon_world.db')
 con=sqlite3.connect(':memory:')
@@ -500,8 +501,10 @@ db.execute("""
     ('26','403');""")
 con.commit()
 
+
+
 def addTrainer(trnr):
-    with conn:
+    with con:
         db.execute("""INSERT INTO Trainer VALUES 
             (:t_id,:username,:level,:coin,:vl_id,:hl_id,:primary_cap)"""
             ,{'t_id': trnr.t_id,    'username': trnr.username,
@@ -510,20 +513,108 @@ def addTrainer(trnr):
               'primary_cap': trnr.primary_cap})
 
 def getAllTrainernames():
-    db.execute("SELECT username FROM Trainer")
+    db.execute("SELECT username,t_id FROM Trainer")
     return db.fetchall()
+
+# def getSpecificTrainername(input):
+#     db.execute("SELECT * FROM Trainer WHERE t_id = input ")
+#     temp = Trainer()
+#     return db.fetchall()
+
+def getTrainerInfo(trnr):
+    pass
 
 def addPokemon(pkm):
     pass      
 
-Brian = Trainer(1,'Brian',6,7566,66,66,101)
-Cristian = Trainer(2,'Cristian',19,25419,19,19,201)
-Khoa = Trainer(3,'Khoa',2,6282,82,82,301)
-Shiyan = Trainer(4,'Shiyan',2,13022,22,22,401)
+# Brian = Trainer(1,'Brian',6,7566,66,66,101)
+# Cristian = Trainer(2,'Cristian',19,25419,19,19,201)
+# Khoa = Trainer(3,'Khoa',2,6282,82,82,301)
+# Shiyan = Trainer(4,'Shiyan',2,13022,22,22,401)
+
+# addTrainer(Brian)
+# addTrainer(Cristian)
+# addTrainer(Khoa)
+# addTrainer(Shiyan)
 
 AllTrainers = getAllTrainernames()
 print("Hello Pokemon Universe")
 print(AllTrainers)
+
+
+
+'''
+MAIN MENU STARTS HERE
+MAIN MENU STARTS HERE
+MAIN MENU STARTS HERE
+
+'''
+def signUp():
+    print('...Sign Up...')
+    done = False
+    while(done == False):
+        userid = str(input('ID: '))
+        username = str(input('Username: '))
+        hometown = str(input('Hometown: '))
+        done = True
+    #Create new trainer object
+    new_trainer = Trainer(userid,username,1,1000,None,hometown,None)
+    #Add new trainer to table
+    addTrainer(new_trainer)
+    signedInSuccessfully(new_trainer)
+
+def signIn():
+    userid = str(input('ID: '))
+    username = str(input('Username: '))
+    db.execute("")
+    #authenticate trainer
+    #call signedInSuccessfully function
+
+    displayInventory()
+
+def signedInSuccessfully(trnr):
+    #After sign up or sign in, the user will be directed here
+    
+    print('...Player Menu...')
+    print("""
+        1. Check Backpack (Items, Coin, etc)
+        2. Check Pokemons
+        3. Pick primary Pokemon
+        4. Visit (location)
+        5. 
+
+        """)
+
+
+
+def menu():
+    print('Hello Pokemon Universe!')
+    print('.......Main Menu.......')
+    print("""
+    1. Sign Up
+    2. Sign In
+    3. Exit
+        """)
+    op = int(input('Enter Option: '))
+    if op == 1:
+        signUp()
+    elif op == 2:
+        signIn()
+    elif op == 3:
+        print('...Exiting Program...')
+        sys.exit()
+    else:
+        print('Invalid Option!')
+
+#MAIN
+menu()
+
+
+
+
+
+
+
 
 
 con.close()

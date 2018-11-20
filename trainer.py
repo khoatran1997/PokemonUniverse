@@ -7,6 +7,5 @@ class Trainer:
 		self.vl_id = vl_id #visit location
 		self.hl_id = hl_id #hometown location
 		self.primary_cap = primary_cap
-
 	def getLevel(self):
 		return '{}'.format(self.level)
