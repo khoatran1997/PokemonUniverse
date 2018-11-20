@@ -545,12 +545,15 @@ def display_primary_pokemon_name(Trainer):
                {'t_id': Trainer.t_id})
     print(db.fetchone())
 
-# Brian = Trainer(1,'Brian',6,7566,66,66,101)
+ADMIN = Trainer(9999,'Admin',9999,9999,9999,999,9999)
+addTrainer(ADMIN)
+
+Brian = Trainer(1,'Brian',6,7566,66,66,101)
 # Cristian = Trainer(2,'Cristian',19,25419,19,19,201)
 # Khoa = Trainer(3,'Khoa',2,6282,82,82,301)
 # Shiyan = Trainer(4,'Shiyan',2,13022,22,22,401)
 
-# addTrainer(Brian)
+addTrainer(Brian)
 # addTrainer(Cristian)
 # addTrainer(Khoa)
 # addTrainer(Shiyan)
@@ -567,6 +570,32 @@ MAIN MENU STARTS HERE
 MAIN MENU STARTS HERE
 
 '''
+
+def adminMenu():
+    loggedIn = True
+    while loggedIn:
+        print('...Admin Menu...')
+        print("""
+            1. View Trainer Table
+            2. Remove A Trainer
+            3. Log Out
+            """)
+        op = int(input('Enter Option: '))
+        if op == 1:
+            db.execute('SELECT * FROM Trainer')
+            print(db.fetchall())
+        elif op == 2:
+            delete_trainer_id = int(input('Trainer ID: '))
+            delete_trainer_name = str(input('Trainer Name: '))
+            with con:
+                db.execute("""DELETE FROM Trainer 
+                    WHERE t_id =? 
+                    AND username =?""",(delete_trainer_id,delete_trainer_name,))
+        elif op == 3:
+            loggedIn = False
+        else:
+            print('Invalid Option')
+
 def signUp():
     print('...Sign Up...')
     done = False
@@ -582,13 +611,16 @@ def signUp():
     signedInSuccessfully(new_trainer)
 
 def signIn():
-    userid = str(input('ID: '))
+    userid = int(input('ID: '))
     username = str(input('Username: '))
-    db.execute("")
-    #authenticate trainer
-    #call signedInSuccessfully function
+    if(userid == 9999 and username == 'ADMIN'):
+        adminMenu()
+    else:
+        db.execute("")
+        #authenticate trainer
+        #call signedInSuccessfully function
 
-    displayInventory()
+        displayInventory()
 
 def signedInSuccessfully(trnr):
     #After sign up or sign in, the user will be directed here
@@ -599,9 +631,16 @@ def signedInSuccessfully(trnr):
         2. Check Pokemons
         3. Pick primary Pokemon
         4. Visit (location)
-        5.
+        5. Log Out
 
         """)
+    op = int(input('Enter Option: '))
+    if op == 1:
+        pass
+    elif op == 2:
+        pass
+    elif op == 5:
+        pass
 
 
 
