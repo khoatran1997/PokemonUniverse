@@ -1,11 +1,11 @@
 class Pokemon:
 	def __init__(self,p_id,pname,basic_HP,basic_ATK,type):
-		self.p_id = g_id
-		self.pname = gname
+		self.p_id = p_id
+		self.pname = pname
 		self.basic_HP = basic_HP
 		self.basic_ATK = basic_ATK
 		self.type = type
-	
+
 	def getType(self):
 		return '{}'.format(self.type)
 

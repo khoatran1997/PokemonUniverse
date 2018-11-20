@@ -25,7 +25,7 @@ db.execute("""
     l_id integer not null,
     lon not null ,
     lat not null,
-    primary key (l_id)    
+    primary key (l_id)
     );""")
 
 db.execute("""CREATE TABLE Wild(
@@ -43,7 +43,7 @@ db.execute("""
     p_id integer not null,
     c_id integer not null,
     level integer default 1,
-    t_id integer not null,  
+    t_id integer not null,
     primary key (c_id),
     foreign key (p_id) references Pokemon(p_id)
     foreign key (t_id) references Trainer(t_id)
@@ -151,7 +151,7 @@ db.execute("""
     );""")
 
 db.execute("""
-    INSERT INTO Pokemon VALUES 
+    INSERT INTO Pokemon VALUES
     ('15','Mew','64','210','Psychic',NULL,NULL),
     ('14','Mewtwo','82','300','Psychic',NULL,NULL),
     ('13','Persian','34','158','Normal',NULL,NULL),
@@ -169,7 +169,7 @@ db.execute("""
     ('1','Bulbasaur','22','118','Grass','2','25');""")
 
 db.execute("""
-    INSERT INTO Location VALUES 
+    INSERT INTO Location VALUES
     ('1', '1','1'),
     ('2', '1','2'),
     ('3', '1','3'),
@@ -273,7 +273,7 @@ db.execute("""
 
 db.execute("""
 
-    INSERT INTO Wild VALUES 
+    INSERT INTO Wild VALUES
     ('6','1','6','66'),
     ('9','2','39','19'),
     ('12','3','27','82'),
@@ -292,7 +292,7 @@ db.execute("""
 
 db.execute("""
 
-    INSERT INTO Captured VALUES 
+    INSERT INTO Captured VALUES
     ('6','101','6','1'),
     ('9','102','39','1'),
     ('12','103','42','1'),
@@ -307,7 +307,7 @@ db.execute("""
     ('14','403','40','4');""")
 
 db.execute("""
-    INSERT INTO Item VALUES 
+    INSERT INTO Item VALUES
     ('1','20Hp','20','recover 20 Hp'),
     ('2','50Hp','50','recover 50 Hp'),
     ('3','100Hp','200','recover 100 Hp'),
@@ -315,7 +315,7 @@ db.execute("""
     ('5','Master Ball','100000','Catch Pokemon without failure');""")
 
 db.execute("""
-    INSERT INTO Own_Item VALUES 
+    INSERT INTO Own_Item VALUES
     ('1','1','5'),
     ('2','1','5'),
     ('3','1','5'),
@@ -338,11 +338,11 @@ db.execute("""
     ('5','4','1');""")
 
 db.execute("""
-    INSERT INTO Gym VALUES 
+    INSERT INTO Gym VALUES
     ('1','Downtown','50','1');""")
 
 db.execute("""
-    INSERT INTO Refresh_Item VALUES 
+    INSERT INTO Refresh_Item VALUES
     ('66','2'),
     ('19','3'),
     ('82','2'),
@@ -360,7 +360,7 @@ db.execute("""
     ('50','3');""")
 
 db.execute("""
-    INSERT INTO Battle VALUES 
+    INSERT INTO Battle VALUES
     ('1','1','w'),
     ('2','1','l'),
     ('2','2','w'),
@@ -371,14 +371,14 @@ db.execute("""
     ('2','4','l');""")
 
 db.execute("""
-    INSERT INTO Battle_Prize VALUES 
+    INSERT INTO Battle_Prize VALUES
     ('1','1','Coin','500'),
     ('2','2','Coin','500'),
     ('3','3','Coin','500'),
     ('4','4','Coin','500');""")
 
 db.execute("""
-    INSERT INTO Skill VALUES 
+    INSERT INTO Skill VALUES
     ('1','Tackle','Normal','5'),
     ('2','Vine Whip','Grass','8'),
     ('3','Power Whip','Grass','108'),
@@ -408,7 +408,7 @@ db.execute("""
     ('27','Focus Blast','Fighting','140');""")
 
 db.execute("""
-    INSERT INTO Can_Learn VALUES 
+    INSERT INTO Can_Learn VALUES
     ('1','1'),
     ('2','1'),
     ('3','1'),
@@ -474,7 +474,7 @@ db.execute("""
     ('27','15');""")
 
 db.execute("""
-    INSERT INTO Captured_Learned_Skill VALUES 
+    INSERT INTO Captured_Learned_Skill VALUES
     ('12','101'),
     ('8','101'),
     ('1','102'),
@@ -505,10 +505,10 @@ con.commit()
 
 def addTrainer(trnr):
     with con:
-        db.execute("""INSERT INTO Trainer VALUES 
+        db.execute("""INSERT INTO Trainer VALUES
             (:t_id,:username,:level,:coin,:vl_id,:hl_id,:primary_cap)"""
             ,{'t_id': trnr.t_id,    'username': trnr.username,
-              'level': trnr.level,  'coin': trnr.coin, 
+              'level': trnr.level,  'coin': trnr.coin,
               'vl_id': trnr.vl_id,  'hl_id': trnr.hl_id,
               'primary_cap': trnr.primary_cap})
 
@@ -525,7 +525,25 @@ def getTrainerInfo(trnr):
     pass
 
 def addPokemon(pkm):
-    pass      
+    pass
+
+def set_primary_pokemon(Trainer, Pokemon):
+    with con:
+        db.execute("""
+                   UPDATE Trainer
+                   SET primary_cap = :pokemon
+                   WHERE t_id = :t_id """,
+                   {'pokemon': Pokemon.p_id, 't_id': Trainer.t_id})
+    Trainer.primary_cap = Pokemon.p_id
+
+def display_primary_pokemon_name(Trainer):
+    db.execute("""
+               SELECT pname
+               FROM Trainer NATURAL JOIN Pokemon
+               WHERE t_id = :t_id AND
+                     p_id = primary_cap""",
+               {'t_id': Trainer.t_id})
+    print(db.fetchone())
 
 # Brian = Trainer(1,'Brian',6,7566,66,66,101)
 # Cristian = Trainer(2,'Cristian',19,25419,19,19,201)
@@ -574,14 +592,14 @@ def signIn():
 
 def signedInSuccessfully(trnr):
     #After sign up or sign in, the user will be directed here
-    
+
     print('...Player Menu...')
     print("""
         1. Check Backpack (Items, Coin, etc)
         2. Check Pokemons
         3. Pick primary Pokemon
         4. Visit (location)
-        5. 
+        5.
 
         """)
 
