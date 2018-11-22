@@ -610,21 +610,41 @@ def signUp():
     addTrainer(new_trainer)
     signedInSuccessfully(new_trainer)
 
-def signIn():
-    userid = int(input('ID: '))
-    username = str(input('Username: '))
-    if(userid == 9999 and username == 'ADMIN'):
-        adminMenu()
-    else:
-        db.execute("")
-        #authenticate trainer
-        #call signedInSuccessfully function
+def extractTuple_to_List(tuple):
+    t_id,username,level,coin,vl_id,hl_id,primary_cap = tuple
+    aNewList = [t_id,username,level,coin,vl_id,hl_id,primary_cap]
+    return aNewList
 
-        displayInventory()
+def signIn():
+    userRecordFound = False
+    while(userRecordFound == False):
+        userid = int(input('ID: '))
+        username = str(input('Username: '))
+        if(userid == 9999 and username == 'ADMIN'):
+            adminMenu()
+        else:
+            #authenticate trainer
+            db.execute('SELECT * FROM Trainer WHERE t_id=? AND username=?',(userid,username,))
+            tempList = db.fetchall()    #temp list to hold result
+            if not tempList:            #if list is empty then query yielded no results
+                print('Invalid ID or Username')
+            else:                       #account exists
+                #tb.fetchall() returns a list
+                #In this case it returns a list with 1 tuple
+                #For example, [(1,'Brian',6,7566,66,66,101)]
+                #We need to extract this tuple to 
+                #initialize tempTrainer object to pass around 
+                newlist = extractTuple_to_List(tempList[0])
+                print(newlist)
+                tempTrainer = Trainer(newlist[0],newlist[1],newlist[2],newlist[3],newlist[4],newlist[5],newlist[6])
+                signedInSuccessfully(tempTrainer)
+
+def checkBag(trainer_id, trainer_username):
+    db.execute('SELECT * FROM Trainer WHERE t_id = ? AND username = ?',(trainer_id,trainer_username,))
+    print(db.fetchall())
 
 def signedInSuccessfully(trnr):
     #After sign up or sign in, the user will be directed here
-
     print('...Player Menu...')
     print("""
         1. Check Backpack (Items, Coin, etc)
@@ -636,6 +656,7 @@ def signedInSuccessfully(trnr):
         """)
     op = int(input('Enter Option: '))
     if op == 1:
+        checkBag(trnr.t_id, trnr.username)
         pass
     elif op == 2:
         pass
