@@ -23,8 +23,9 @@ db.execute(""" CREATE TABLE Pokemon(
 db.execute("""
     CREATE TABLE Location(
     l_id integer not null,
-    lon not null ,
-    lat not null,
+    lname text,
+    lon not null ,          -- longitude
+    lat not null,           -- latitude
     primary key (l_id)
     );""")
 
@@ -170,125 +171,125 @@ db.execute("""
 
 db.execute("""
     INSERT INTO Location VALUES
-    ('1', '1','1'),
-    ('2', '1','2'),
-    ('3', '1','3'),
-    ('4', '1','4'),
-    ('5', '1','5'),
-    ('6', '1','6'),
-    ('7', '1','7'),
-    ('8', '1','8'),
-    ('9', '1','9'),
-    ('10', '1','10'),
-    ('11', '2','1'),
-    ('12', '2','2'),
-    ('13', '2','3'),
-    ('14', '2','4'),
-    ('15', '2','5'),
-    ('16', '2','6'),
-    ('17', '2','7'),
-    ('18', '2','8'),
-    ('19', '2','9'),
-    ('20', '2','10'),
-    ('21', '3','1'),
-    ('22', '3','2'),
-    ('23', '3','3'),
-    ('24', '3','4'),
-    ('25', '3','5'),
-    ('26', '3','6'),
-    ('27', '3','7'),
-    ('28', '3','8'),
-    ('29', '3','9'),
-    ('30', '3','10'),
-    ('31', '4','1'),
-    ('32', '4','2'),
-    ('33', '4','3'),
-    ('34', '4','4'),
-    ('35', '4','5'),
-    ('36', '4','6'),
-    ('37', '4','7'),
-    ('38', '4','8'),
-    ('39', '4','9'),
-    ('40', '4','10'),
-    ('41', '5','1'),
-    ('42', '5','2'),
-    ('43', '5','3'),
-    ('44', '5','4'),
-    ('45', '5','5'),
-    ('46', '5','6'),
-    ('47', '5','7'),
-    ('48', '5','8'),
-    ('49', '5','9'),
-    ('50', '5','10'),
-    ('51', '6','1'),
-    ('52', '6','2'),
-    ('53', '6','3'),
-    ('54', '6','4'),
-    ('55', '6','5'),
-    ('56', '6','6'),
-    ('57', '6','7'),
-    ('58', '6','8'),
-    ('59', '6','9'),
-    ('60', '6','10'),
-    ('61', '7','1'),
-    ('62', '7','2'),
-    ('63', '7','3'),
-    ('64', '7','4'),
-    ('65', '7','5'),
-    ('66', '7','6'),
-    ('67', '7','7'),
-    ('68', '7','8'),
-    ('69', '7','9'),
-    ('70', '7','10'),
-    ('71', '8','1'),
-    ('72', '8','2'),
-    ('73', '8','3'),
-    ('74', '8','4'),
-    ('75', '8','5'),
-    ('76', '8','6'),
-    ('77', '8','7'),
-    ('78', '8','8'),
-    ('79', '8','9'),
-    ('80', '8','10'),
-    ('81', '9','1'),
-    ('82', '9','2'),
-    ('83', '9','3'),
-    ('84', '9','4'),
-    ('85', '9','5'),
-    ('86', '9','6'),
-    ('87', '9','7'),
-    ('88', '9','8'),
-    ('89', '9','9'),
-    ('90', '9','10'),
-    ('91', '10','1'),
-    ('92', '10','2'),
-    ('93', '10','3'),
-    ('94', '10','4'),
-    ('95', '10','5'),
-    ('96', '10','6'),
-    ('97', '10','7'),
-    ('98', '10','8'),
-    ('99', '10','9'),
-    ('100', '10','10');""")
+    ('1', 'San Jose','1','1'),
+    ('2', 'San Francisco','1','2'),
+    ('3', 'Milpitas','1','3'),
+    ('4', 'Los Angeles','1','4'),
+    ('5', 'Seattle','1','5'),
+    ('6', 'New York','1','6'),
+    ('7', 'Oakland','1','7'),
+    ('8', 'Santa Clara','1','8'),
+    ('9', 'Fremont','1','9'),
+    ('10', 'Palo Alto','1','10'),
+    ('11', null,'2','1'),
+    ('12', null,'2','2'),
+    ('13', null,'2','3'),
+    ('14', null,'2','4'),
+    ('15', null,'2','5'),
+    ('16', null,'2','6'),
+    ('17', null,'2','7'),
+    ('18', null,'2','8'),
+    ('19', null,'2','9'),
+    ('20', null,'2','10'),
+    ('21', null,'3','1'),
+    ('22', null,'3','2'),
+    ('23', null,'3','3'),
+    ('24', null,'3','4'),
+    ('25', null,'3','5'),
+    ('26', null,'3','6'),
+    ('27', null,'3','7'),
+    ('28', null,'3','8'),
+    ('29', null,'3','9'),
+    ('30', null,'3','10'),
+    ('31', null,'4','1'),
+    ('32', null,'4','2'),
+    ('33', null,'4','3'),
+    ('34', null,'4','4'),
+    ('35', null,'4','5'),
+    ('36', null,'4','6'),
+    ('37', null,'4','7'),
+    ('38', null,'4','8'),
+    ('39', null,'4','9'),
+    ('40', null,'4','10'),
+    ('41', null,'5','1'),
+    ('42', null,'5','2'),
+    ('43', null,'5','3'),
+    ('44', null,'5','4'),
+    ('45', null,'5','5'),
+    ('46', null,'5','6'),
+    ('47', null,'5','7'),
+    ('48', null,'5','8'),
+    ('49', null,'5','9'),
+    ('50', null,'5','10'),
+    ('51', null,'6','1'),
+    ('52', null,'6','2'),
+    ('53', null,'6','3'),
+    ('54', null,'6','4'),
+    ('55', null,'6','5'),
+    ('56', null,'6','6'),
+    ('57', null,'6','7'),
+    ('58', null,'6','8'),
+    ('59', null,'6','9'),
+    ('60', null,'6','10'),
+    ('61', null,'7','1'),
+    ('62', null,'7','2'),
+    ('63', null,'7','3'),
+    ('64', null,'7','4'),
+    ('65', null,'7','5'),
+    ('66', null,'7','6'),
+    ('67', null,'7','7'),
+    ('68', null,'7','8'),
+    ('69', null,'7','9'),
+    ('70', null,'7','10'),
+    ('71', null,'8','1'),
+    ('72', null,'8','2'),
+    ('73', null,'8','3'),
+    ('74', null,'8','4'),
+    ('75', null,'8','5'),
+    ('76', null,'8','6'),
+    ('77', null,'8','7'),
+    ('78', null,'8','8'),
+    ('79', null,'8','9'),
+    ('80', null,'8','10'),
+    ('81', null,'9','1'),
+    ('82', null,'9','2'),
+    ('83', null,'9','3'),
+    ('84', null,'9','4'),
+    ('85', null,'9','5'),
+    ('86', null,'9','6'),
+    ('87', null,'9','7'),
+    ('88', null,'9','8'),
+    ('89', null,'9','9'),
+    ('90', null,'9','10'),
+    ('91', null,'10','1'),
+    ('92', null,'10','2'),
+    ('93', null,'10','3'),
+    ('94', null,'10','4'),
+    ('95', null,'10','5'),
+    ('96', null,'10','6'),
+    ('97', null,'10','7'),
+    ('98', null,'10','8'),
+    ('99', null,'10','9'),
+    ('100', null,'10','10');""")
 
 db.execute("""
 
     INSERT INTO Wild VALUES
-    ('6','1','6','66'),
-    ('9','2','39','19'),
-    ('12','3','27','82'),
-    ('2','4','17','22'),
-    ('13','5','43','18'),
-    ('15','6','15','55'),
-    ('13','7','13','28'),
-    ('12','8','42','2'),
-    ('15','9','34','20'),
-    ('4','10','24','29'),
-    ('9','11','40','74'),
-    ('10','12','5','60'),
-    ('5','13','33','65'),
-    ('13','14','41','43'),
-    ('3','15','45','50');""")
+    ('6','1','6','1'),
+    ('9','2','39','2'),
+    ('12','3','27','3'),
+    ('2','4','17','4'),
+    ('13','5','43','5'),
+    ('15','6','15','6'),
+    ('13','7','13','7'),
+    ('12','8','42','8'),
+    ('15','9','34','9'),
+    ('4','10','24','10'),
+    ('9','11','40','9'),
+    ('10','12','5','8'),
+    ('5','13','33','7'),
+    ('13','14','41','6'),
+    ('3','15','45','5');""")
 
 db.execute("""
 
@@ -339,25 +340,25 @@ db.execute("""
 
 db.execute("""
     INSERT INTO Gym VALUES
-    ('1','Downtown','50','1');""")
+    ('1','Downtown','50','1');""")  #location_id: 50 leader: Brian
 
 db.execute("""
     INSERT INTO Refresh_Item VALUES
-    ('66','2'),
-    ('19','3'),
-    ('82','2'),
-    ('22','2'),
-    ('18','2'),
-    ('55','3'),
-    ('28','4'),
-    ('2','2'),
-    ('20','4'),
-    ('29','1'),
-    ('74','2'),
-    ('60','4'),
-    ('65','1'),
-    ('43','3'),
-    ('50','3');""")
+    ('1','2'),
+    ('2','3'),
+    ('3','2'),
+    ('4','2'),
+    ('5','2'),
+    ('6','3'),
+    ('7','4'),
+    ('8','2'),
+    ('9','4'),
+    ('10','1'),
+    ('10','2'),
+    ('11','4'),
+    ('12','1'),
+    ('13','3'),
+    ('14','3');""")
 
 db.execute("""
     INSERT INTO Battle VALUES
@@ -548,10 +549,10 @@ def display_primary_pokemon_name(Trainer):
 ADMIN = Trainer(9999,'Admin',9999,9999,9999,999,9999)
 addTrainer(ADMIN)
 
-Brian = Trainer(1,'Brian',6,7566,66,66,101)
-# Cristian = Trainer(2,'Cristian',19,25419,19,19,201)
-# Khoa = Trainer(3,'Khoa',2,6282,82,82,301)
-# Shiyan = Trainer(4,'Shiyan',2,13022,22,22,401)
+Brian = Trainer(1,'Brian',6,7566,66,3,101)
+# Cristian = Trainer(2,'Cristian',19,25419,19,1,201)
+# Khoa = Trainer(3,'Khoa',2,6282,82,1,301)
+# Shiyan = Trainer(4,'Shiyan',2,13022,22,1,401)
 
 addTrainer(Brian)
 # addTrainer(Cristian)
@@ -608,7 +609,48 @@ def signUp():
     new_trainer = Trainer(userid,username,1,1000,None,hometown,None)
     #Add new trainer to table
     addTrainer(new_trainer)
+    tutorial(new_trainer)
     signedInSuccessfully(new_trainer)
+
+def visitLocation(trnr):
+    db.execute('SELECT l_id, lname FROM Location WHERE lname IS NOT NULL')
+    locList = db.fetchall()
+    for x in locList:
+        print(x)
+    Goto = str(input('Enter Location ID: '))
+    print('Current Location: ',Goto)
+    db.execute("""SELECT p.p_id,pname,level FROM Wild AS w JOIN Pokemon AS p
+                ON w.p_id = p.p_id AND l_id = ?""",(Goto,))
+    #db.execute('SELECT p_id,w_id,level FROM Wild WHERE l_id = ?',(Goto,))
+    wildList = db.fetchall()
+    for x in wildList:
+        print(x)
+    #List Item
+    #List Gym
+    goBack = False
+    while(goBack == False):
+        print("""
+            1. Capture Pokemon
+            2. Pick Up Item
+            3. Take Over Gym
+            4. Back to Player Menu
+            """)
+        op = int(input('Enter Option: '))
+        if(op == 1):
+            pass
+            #capture pokemon
+        elif(op == 2):
+            pass
+            #pick up item
+        elif(op == 3):
+            pass
+            #take over gym
+        elif(op == 4):
+            goBack = True
+
+
+def tutorial(trnr): #capture fist pokemon
+    pass
 
 def extractTuple_to_List(tuple):
     t_id,username,level,coin,vl_id,hl_id,primary_cap = tuple
@@ -616,8 +658,8 @@ def extractTuple_to_List(tuple):
     return aNewList
 
 def signIn():
-    userRecordFound = False
-    while(userRecordFound == False):
+    TrainerAuthenticated = False
+    while(TrainerAuthenticated == False):
         userid = int(input('ID: '))
         username = str(input('Username: '))
         if(userid == 9999 and username == 'ADMIN'):
@@ -635,9 +677,9 @@ def signIn():
                 #We need to extract this tuple to 
                 #initialize tempTrainer object to pass around 
                 newlist = extractTuple_to_List(tempList[0])
-                print(newlist)
                 tempTrainer = Trainer(newlist[0],newlist[1],newlist[2],newlist[3],newlist[4],newlist[5],newlist[6])
-                signedInSuccessfully(tempTrainer)
+                TrainerAuthenticated = True
+    signedInSuccessfully(tempTrainer)
 
 def checkBag(trainer_id, trainer_username):
     db.execute('SELECT * FROM Trainer WHERE t_id = ? AND username = ?',(trainer_id,trainer_username,))
@@ -645,23 +687,27 @@ def checkBag(trainer_id, trainer_username):
 
 def signedInSuccessfully(trnr):
     #After sign up or sign in, the user will be directed here
-    print('...Player Menu...')
-    print("""
-        1. Check Backpack (Items, Coin, etc)
-        2. Check Pokemons
-        3. Pick primary Pokemon
-        4. Visit (location)
-        5. Log Out
+    logOut = False
+    while(logOut == False):
+        print('...Player Menu...')
+        print("""
+            1. Check Backpack (Items, Coin, etc)
+            2. Check Pokemons
+            3. Pick primary Pokemon
+            4. Visit (location)
+            5. Log Out
 
-        """)
-    op = int(input('Enter Option: '))
-    if op == 1:
-        checkBag(trnr.t_id, trnr.username)
-        pass
-    elif op == 2:
-        pass
-    elif op == 5:
-        pass
+            """)
+        op = int(input('Enter Option: '))
+        if op == 1:
+            checkBag(trnr.t_id, trnr.username)
+            pass
+        elif op == 2:
+            pass
+        elif op == 4:
+            visitLocation(trnr)
+        elif op == 5:
+            logOut = True
 
 
 
