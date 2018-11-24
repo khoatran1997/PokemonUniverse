@@ -9,3 +9,4 @@ class Trainer:
 		self.primary_cap = primary_cap
 	def getLevel(self):
 		return '{}'.format(self.level)
+	captured_pokemon = list()

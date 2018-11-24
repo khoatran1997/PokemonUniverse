@@ -15,9 +15,9 @@ class Wild(Pokemon):
 		self.l_id = l_id
 
 class Captured(Pokemon):
-	def __init__(self,c_id):
+	def __init__(self,p_id, c_id):
 		# Input: c_id
 		# Get veriable from DB: p_id, name, lv, type, s_id1, s_id2(Captured only has 2 skills),exp, t_id
-		# Derive veriable: ATK=basic_ATK*(1+0.5*lv), HP=basic_HP*(1+0.7*lv)	
+		# Derive veriable: ATK=basic_ATK*(1+0.5*lv), HP=basic_HP*(1+0.7*lv)
 		self.c_id = c_id
-		super().__init__(self.p_id)
+		super().__init__(p_id)

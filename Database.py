@@ -1,11 +1,11 @@
 import sqlite3
 from trainer import Trainer
-from pokemon import Pokemon
+from pokemon import Pokemon, Captured
 import sys
 
-#con=sqlite3.connect('pokemon_world.db')
-con=sqlite3.connect(':memory:')
-db=con.cursor()
+# con=sqlite3.connect('pokemon_world.db')
+con = sqlite3.connect(':memory:')
+db = con.cursor()
 
 #Create tables
 db.execute(""" CREATE TABLE Pokemon(
@@ -546,6 +546,12 @@ def display_primary_pokemon_name(Trainer):
                {'t_id': Trainer.t_id})
     print(db.fetchone())
 
+def add_captured(p_id, c_id, t_id):
+    db.execute("""
+                INSERT INTO Captured(p_id, c_id, t_id)
+                VALUES
+                (?, ?, ?)""", (p_id, c_id, t_id))
+
 ADMIN = Trainer(9999,'Admin',9999,9999,9999,999,9999)
 addTrainer(ADMIN)
 
@@ -589,8 +595,8 @@ def adminMenu():
             delete_trainer_id = int(input('Trainer ID: '))
             delete_trainer_name = str(input('Trainer Name: '))
             with con:
-                db.execute("""DELETE FROM Trainer 
-                    WHERE t_id =? 
+                db.execute("""DELETE FROM Trainer
+                    WHERE t_id =?
                     AND username =?""",(delete_trainer_id,delete_trainer_name,))
         elif op == 3:
             loggedIn = False
@@ -608,8 +614,8 @@ def signUp():
     #Create new trainer object
     new_trainer = Trainer(userid,username,1,1000,None,hometown,None)
     #Add new trainer to table
-    addTrainer(new_trainer)
     tutorial(new_trainer)
+    addTrainer(new_trainer)
     signedInSuccessfully(new_trainer)
 
 def visitLocation(trnr):
@@ -650,7 +656,26 @@ def visitLocation(trnr):
 
 
 def tutorial(trnr): #capture fist pokemon
-    pass
+    print("Choose your first Pokemon:")
+    print("\t1. Bulbasaur\n\t2. Charmander\n\t3. Squirtle ")
+    op = int(input("Enter option: "))
+    if (op == 1):
+        p_id = 1
+    elif (op == 2):
+        p_id = 4
+    elif (op == 3):
+        p_id = 7
+    else:
+        print('Invalid Option!')
+        exit(-1)
+    try:
+        with con:
+            add_captured(p_id, 1, trnr.t_id)
+            trnr.primary_cap = p_id;
+            trnr.captured_pokemon.append(Captured(p_id, 1))
+    except sqlite3.IntegrityError as e:
+        con.rollback()
+        raise e
 
 def extractTuple_to_List(tuple):
     t_id,username,level,coin,vl_id,hl_id,primary_cap = tuple
@@ -674,8 +699,8 @@ def signIn():
                 #tb.fetchall() returns a list
                 #In this case it returns a list with 1 tuple
                 #For example, [(1,'Brian',6,7566,66,66,101)]
-                #We need to extract this tuple to 
-                #initialize tempTrainer object to pass around 
+                #We need to extract this tuple to
+                #initialize tempTrainer object to pass around
                 newlist = extractTuple_to_List(tempList[0])
                 tempTrainer = Trainer(newlist[0],newlist[1],newlist[2],newlist[3],newlist[4],newlist[5],newlist[6])
                 TrainerAuthenticated = True
