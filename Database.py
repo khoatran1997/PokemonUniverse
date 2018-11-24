@@ -779,7 +779,10 @@ def checkBag(trainer_id, trainer_username):
     db.execute('SELECT * FROM Trainer WHERE t_id = ? AND username = ?',
                (trainer_id, trainer_username,))
     print(db.fetchall())
-
+    
+def checkPokemon(trainer_id):
+	db.execute('SELECT p.pname FROM Pokemon p INNER JOIN Captured c ON p.p_id = c.p_id WHERE c.t_id = ?', (trainer_id,))
+	print(db.fetchall())
 
 def signedInSuccessfully(trnr):
     # After sign up or sign in, the user will be directed here
@@ -797,9 +800,8 @@ def signedInSuccessfully(trnr):
         op = int(input('Enter Option: '))
         if op == 1:
             checkBag(trnr.t_id, trnr.username)
-            pass
         elif op == 2:
-            pass
+            checkPokemon(trnr.t_id)
         elif op == 3:
             set_primary_pokemon(trnr)
         elif op == 4:
