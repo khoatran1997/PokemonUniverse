@@ -336,8 +336,11 @@ def menu():
         print('Invalid Option!')
 
 
-def start_battle:
-
+def start_battle(trnr):
+    # 2 trainers
+    # db pointer
+    #
+    Battle()
 
 # MAIN
 menu()
