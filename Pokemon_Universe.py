@@ -124,19 +124,6 @@ def add_captured(p_id, c_id, t_id):
                 (?, ?, ?)""", (p_id, c_id, t_id))
 
 
-ADMIN = Trainer(9999, 'Admin', 9999, 9999, 9999, 999, 9999)
-addTrainer(ADMIN)
-
-Brian = Trainer(1, 'Brian', 6, 7566, 66, 3, 101)
-# Cristian = Trainer(2,'Cristian',19,25419,19,1,201)
-# Khoa = Trainer(3,'Khoa',2,6282,82,1,301)
-# Shiyan = Trainer(4,'Shiyan',2,13022,22,1,401)
-
-addTrainer(Brian)
-# addTrainer(Cristian)
-# addTrainer(Khoa)
-# addTrainer(Shiyan)
-
 AllTrainers = getAllTrainernames()
 print("Hello Pokemon Universe")
 print(AllTrainers)
@@ -262,8 +249,9 @@ def signIn():
     while TrainerAuthenticated is False:
         userid = int(input('ID: '))
         username = str(input('Username: '))
-        if userid == 9999 and username == 'ADMIN':
+        if userid == 0 and username == 'Admin':
             adminMenu()
+            menu()
         else:
             # authenticate trainer
             db.execute('SELECT * FROM Trainer WHERE t_id=? AND username=?',
@@ -282,7 +270,8 @@ def signIn():
                                       newlist[3], newlist[4], newlist[5],
                                       newlist[6])
                 TrainerAuthenticated = True
-    signedInSuccessfully(tempTrainer)
+            signedInSuccessfully(tempTrainer)
+
 
 
 def checkBag(trainer_id, trainer_username):
