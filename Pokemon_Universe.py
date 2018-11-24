@@ -2,7 +2,7 @@ import sqlite3
 from trainer import Trainer
 from pokemon import Pokemon, Captured
 import sys
-from battle import Battle
+# from battle import Battle
 
 con=sqlite3.connect('pokemon_world.db')
 # con = sqlite3.connect(':memory:')
@@ -10,14 +10,18 @@ db = con.cursor()
 
 
 def addTrainer(trnr):
-    with con:
-        db.execute("""INSERT INTO Trainer VALUES
-                   (:t_id,:username,:level,:coin,:vl_id,:hl_id,:primary_cap)"""
-                   , {'t_id': trnr.t_id,    'username': trnr.username,
-                      'level': trnr.level,  'coin': trnr.coin,
-                      'vl_id': trnr.vl_id,  'hl_id': trnr.hl_id,
-                      'primary_cap': trnr.primary_cap})
-
+    try:
+        with con:
+            db.execute("""INSERT INTO Trainer VALUES
+                       (:t_id,:username,:level,:coin,:vl_id,:hl_id,:primary_cap)"""
+                       , {'t_id': trnr.t_id,    'username': trnr.username,
+                          'level': trnr.level,  'coin': trnr.coin,
+                          'vl_id': trnr.vl_id,  'hl_id': trnr.hl_id,
+                          'primary_cap': trnr.primary_cap})
+    except sqlite3.IntegrityError as e:
+        con.rollback()
+        con.close()
+        raise e
 
 def getAllTrainernames():
     db.execute("SELECT username,t_id FROM Trainer")
@@ -340,7 +344,7 @@ def start_battle(trnr):
     # 2 trainers
     # db pointer
     #
-    Battle()
+    pass
 
 # MAIN
 menu()
