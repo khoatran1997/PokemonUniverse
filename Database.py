@@ -2,6 +2,7 @@ import sqlite3
 from trainer import Trainer
 from pokemon import Pokemon, Captured
 import sys
+import re
 
 # con=sqlite3.connect('pokemon_world.db')
 con = sqlite3.connect(':memory:')
@@ -528,14 +529,64 @@ def getTrainerInfo(trnr):
 def addPokemon(pkm):
     pass
 
-def set_primary_pokemon(Trainer, Pokemon):
-    with con:
-        db.execute("""
-                   UPDATE Trainer
-                   SET primary_cap = :pokemon
-                   WHERE t_id = :t_id """,
-                   {'pokemon': Pokemon.p_id, 't_id': Trainer.t_id})
-    Trainer.primary_cap = Pokemon.p_id
+def captured_pokemon_names(Trainer):
+    db.execute("""
+            SELECT pname, p_id
+            FROM Captured NATURAL JOIN Pokemon
+            WHERE t_id = :t_id""",
+            {'t_id': Trainer.t_id})
+    count = 1
+    pokemon_list = db.fetchall()
+    for row in pokemon_list:
+        print("\t\t{0}. {1}".format(count, row[0]))
+        count += 1
+    return pokemon_list
+
+def update_primary(Trainer, p_id):
+    db.execute("""
+               UPDATE Trainer
+               SET primary_cap = :pokemon
+               WHERE t_id = :t_id """,
+               {'pokemon': p_id, 't_id': Trainer.t_id})
+    Trainer.primary_cap = p_id
+
+def set_primary_pokemon(Trainer):
+    try:
+        with con:
+            while True:
+                print("...Primary Pokemon Menu...\n")
+                print("\tCurrent primary Pokemon:")
+                display_primary_pokemon_name(Trainer)
+                print("\tSelect primary Pokemon:")
+
+                pokemon_list = captured_pokemon_names(Trainer)
+
+                while True:
+                    op = int(input("Enter Option: "))
+                    if op > len(pokemon_list) or op < 1:
+                        print("\n\tInvalid option, choose a primary pokemon from the list\n")
+                    else:
+                        break
+
+                p_id = pokemon_list[op - 1][1]
+
+                update_primary(Trainer, p_id)
+
+                print("\n\tNew primary Pokemon:")
+                display_primary_pokemon_name(Trainer)
+
+                print("\t1. Choose a different primary pokemon\n\t2. Return to Player Menu")
+                op2 = int(input("Enter Option: "))
+                if op2 == 1:
+                    continue
+                if op2 == 2:
+                    break
+                else:
+                    print("\n\tInvalid option, choose a primary pokemon from the list\n")
+
+    except sqlite3.IntegrityError as e:
+        con.rollback()
+        raise e
 
 def display_primary_pokemon_name(Trainer):
     db.execute("""
@@ -544,7 +595,8 @@ def display_primary_pokemon_name(Trainer):
                WHERE t_id = :t_id AND
                      p_id = primary_cap""",
                {'t_id': Trainer.t_id})
-    print(db.fetchone())
+    tuple = db.fetchone()
+    print("\t\t{}\n".format(tuple[0]))
 
 def add_captured(p_id, c_id, t_id):
     db.execute("""
@@ -672,7 +724,6 @@ def tutorial(trnr): #capture fist pokemon
         with con:
             add_captured(p_id, 1, trnr.t_id)
             trnr.primary_cap = p_id;
-            trnr.captured_pokemon.append(Captured(p_id, 1))
     except sqlite3.IntegrityError as e:
         con.rollback()
         raise e
@@ -729,6 +780,8 @@ def signedInSuccessfully(trnr):
             pass
         elif op == 2:
             pass
+        elif op == 3:
+            set_primary_pokemon(trnr)
         elif op == 4:
             visitLocation(trnr)
         elif op == 5:
