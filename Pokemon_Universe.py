@@ -34,11 +34,34 @@ def getAllTrainernames():
 
 
 def getTrainerInfo(trnr):
-    pass
-
+    db.execute("SELECT t_id, username, level, coin FROM Trainer")
+    return db.fetchall()
 
 def addPokemon(pkm):
-    pass
+    with con:
+        db.execute("""INSERT INTO Pokemon VALUES
+            (:p_id,:pname,:basic_HP,:basic_ATK,:type,:r_id,:r_lv)"""
+            ,{'p_id': pkm.p_id,    'pname': pkm.pname,
+              'basic_HP': pkm.basic_HP,  'basic_ATK': pkm.basic_ATK,
+              'type': pkm.type,  'r_id': pkm.r_id,
+              'r_lv': pkm.r_lv})
+
+def update_trainer(t)
+    with con:
+        db.execute("""UPDATE Trainer 
+                      SET level = :level, coin = :coin, vl_id = :vl_id 
+                      WHERE t_id = :t_id""",
+                    {'level': t.level, 'coin': t.coin, 'vl_id': t.vl_id})
+
+def add_wild(w):
+    with con:
+        db.execute("INSERT INTO Wild VALUES (:p_id, :w_id, :level, :l_id)",
+            {'p_id': w.p_id, 'w_id': w.w_id, 'level': w.level, 'l_id': w.l_id})
+
+def del_wild(wd):
+	with con:
+		db.execute("DELETE FROM Wild WHERE w_id = :w_id",
+			{'w_id': wd.w_id}
 
 
 def captured_pokemon_names(trainer):
