@@ -4,8 +4,6 @@ from pokemon import Pokemon, Captured
 import sys
 # from battle import Battle
 
-
-
 con=sqlite3.connect('pokemon_world.db')
 # con = sqlite3.connect(':memory:')
 db = con.cursor()
@@ -30,12 +28,6 @@ def addTrainer(trnr):
 def getAllTrainernames():
     db.execute("SELECT username,t_id FROM Trainer")
     return db.fetchall()
-
-# def getSpecificTrainername(input):
-#     db.execute("SELECT * FROM Trainer WHERE t_id = input ")
-#     temp = Trainer()
-#     return db.fetchall()
-
 
 def getTrainerInfo(trnr):
     db.execute("SELECT t_id, username, level, coin FROM Trainer")
@@ -81,7 +73,6 @@ def captured_pokemon_names(trainer):
         count += 1
     return pokemon_list
 
-
 def update_primary(trainer, p_id):
     db.execute("""
                UPDATE Trainer
@@ -89,7 +80,6 @@ def update_primary(trainer, p_id):
                WHERE t_id = :t_id """,
                {'pokemon': p_id, 't_id': trainer.t_id})
     trainer.primary_cap = p_id
-
 
 def set_primary_pokemon(trainer):
     try:
@@ -132,7 +122,6 @@ def set_primary_pokemon(trainer):
         con.rollback()
         raise e
 
-
 def display_primary_pokemon_name(trainer):
     db.execute("""
                SELECT pname
@@ -143,13 +132,11 @@ def display_primary_pokemon_name(trainer):
     pokemon = db.fetchone()
     print("\t\t{}\n".format(pokemon[0]))
 
-
 def add_captured(p_id, c_id, t_id):
     db.execute("""
                 INSERT INTO Captured(p_id, c_id, t_id)
                 VALUES
                 (?, ?, ?)""", (p_id, c_id, t_id))
-
 
 AllTrainers = getAllTrainernames()
 print("Hello Pokemon Universe")
@@ -161,7 +148,6 @@ MAIN MENU STARTS HERE
 MAIN MENU STARTS HERE
 
 '''
-
 
 def adminMenu():
     loggedIn = True
@@ -188,6 +174,7 @@ def adminMenu():
             loggedIn = False
         else:
             print('Invalid Option')
+
 def isUniqueUsername(newusername):
     db.execute("SELECT * FROM Trainer WHERE username = ?",(newusername,))
     tempList = db.fetchone()
@@ -218,7 +205,6 @@ def signUp():
         else:
             print("Username Already Exists. Try Another One!")
 
-
 def visitLocation(trnr):
     db.execute('SELECT l_id, lname FROM Location WHERE lname IS NOT NULL')
     locList = db.fetchall()
@@ -226,7 +212,8 @@ def visitLocation(trnr):
         print(x)
     Goto = str(input('Enter Location ID: '))
     print('Current Location: ', Goto)
-    db.execute("""SELECT p.p_id,pname,level FROM Wild AS w JOIN Pokemon AS p
+    # List Wild Pokemons
+    db.execute("""SELECT p.p_id,w_id,pname,level FROM Wild AS w JOIN Pokemon AS p
                 ON w.p_id = p.p_id AND l_id = ?""", (Goto,))
     wildList = db.fetchall()
     for x in wildList:
@@ -250,7 +237,9 @@ def visitLocation(trnr):
             """)
         op = int(input('Enter Option: '))
         if op == 1:
-            pass
+            wildID = int(input("Enter Wild Pokemon Id: "))
+            wild_to_captured(wildID,trnr.t_id)
+            print("Pokemon has been captured")
             # capture pokemon
         elif op == 2:
             pass
@@ -261,6 +250,19 @@ def visitLocation(trnr):
         elif op == 4:
             goBack = True
 
+#wild: p_id,w_id,level,l_id
+#captured: p_id,c_id,level,t_id
+def wild_to_captured(wildID,trainerID):
+    db.execute("SELECT p_id FROM Wild WHERE w_id=?",(wildID,))
+    pokemonID = db.fetchone()
+    db.execute("SELECT MAX(c_id) FROM Trainer AS t JOIN Captured AS c ON t.t_id=? AND c.t_id=?",(trainerID,trainerID,))
+    maxCapturedID = db.fetchone()
+    with con:
+        db.execute("""INSERT INTO Captured VALUES
+                   (:p_id,:c_id,:level,:t_id)"""
+                   , {'p_id': pokemonID[0],    'c_id': int(maxCapturedID[0])+1,
+                      'level': 1,  't_id': trainerID})
+        db.execute("DELETE FROM Wild WHERE w_id=?",(wildID,))
 
 def tutorial(trnr):  # capture fist pokemon
     print("Choose your first Pokemon:")
