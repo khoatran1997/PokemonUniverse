@@ -4,10 +4,14 @@ from pokemon import Pokemon, Captured
 import sys
 # from battle import Battle
 
+
+
 con=sqlite3.connect('pokemon_world.db')
 # con = sqlite3.connect(':memory:')
 db = con.cursor()
 
+db.execute("SELECT MAX(t_id) FROM Trainer")
+currentMaxTrainerID = db.fetchone()    #Use to calculate t_id when player sign up
 
 def addTrainer(trnr):
     try:
@@ -46,7 +50,7 @@ def addPokemon(pkm):
               'type': pkm.type,  'r_id': pkm.r_id,
               'r_lv': pkm.r_lv})
 
-def update_trainer(t)
+def update_trainer(t):
     with con:
         db.execute("""UPDATE Trainer 
                       SET level = :level, coin = :coin, vl_id = :vl_id 
@@ -61,7 +65,7 @@ def add_wild(w):
 def del_wild(wd):
 	with con:
 		db.execute("DELETE FROM Wild WHERE w_id = :w_id",
-			{'w_id': wd.w_id}
+			{'w_id': wd.w_id})
 
 
 def captured_pokemon_names(trainer):
@@ -184,22 +188,35 @@ def adminMenu():
             loggedIn = False
         else:
             print('Invalid Option')
-
+def isUniqueUsername(newusername):
+    db.execute("SELECT * FROM Trainer WHERE username = ?",(newusername,))
+    tempList = db.fetchone()
+    if not tempList:    #username ok
+        return True
+    else:
+        return False
 
 def signUp():
     print('...Sign Up...')
     done = False
     while done is False:
-        userid = str(input('ID: '))
         username = str(input('Username: '))
-        hometown = str(input('Hometown: '))
-        done = True
-    # Create new trainer object
-    new_trainer = Trainer(userid, username, 1, 1000, None, hometown, None)
-    # Add new trainer to table
-    tutorial(new_trainer)
-    addTrainer(new_trainer)
-    signedInSuccessfully(new_trainer)
+        if isUniqueUsername(username):
+            userid = int(currentMaxTrainerID[0]) + 1
+            db.execute('SELECT l_id, lname FROM Location WHERE lname IS NOT NULL')
+            locList = db.fetchall()
+            for x in locList:
+                print(x)
+            hometown = str(input('Hometown: '))
+            done = True
+            # Create new trainer object
+            new_trainer = Trainer(userid, username, 1, 1000, None, hometown, None)
+            # Add new trainer to table
+            tutorial(new_trainer)
+            addTrainer(new_trainer)
+            signedInSuccessfully(new_trainer)
+        else:
+            print("Username Already Exists. Try Another One!")
 
 
 def visitLocation(trnr):
@@ -211,11 +228,17 @@ def visitLocation(trnr):
     print('Current Location: ', Goto)
     db.execute("""SELECT p.p_id,pname,level FROM Wild AS w JOIN Pokemon AS p
                 ON w.p_id = p.p_id AND l_id = ?""", (Goto,))
-    # db.execute('SELECT p_id,w_id,level FROM Wild WHERE l_id = ?',(Goto,))
     wildList = db.fetchall()
     for x in wildList:
         print(x)
+    
     # List Item
+    db.execute("""SELECT iname,funct FROM Item AS i JOIN Refresh_Item AS r
+                ON i.i_id = r.i_id AND l_id = ?""", (Goto,))
+    itemList = db.fetchall()
+    for x in itemList:
+        print(x)    
+    
     # List Gym
     goBack = False
     while goBack is False:
@@ -270,18 +293,18 @@ def extractTuple_to_List(tuple):
 def signIn():
     TrainerAuthenticated = False
     while TrainerAuthenticated is False:
-        userid = int(input('ID: '))
+        #userid = int(input('ID: '))
         username = str(input('Username: '))
-        if userid == 0 and username == 'Admin':
+        if username == 'Admin':
             adminMenu()
             menu()
         else:
             # authenticate trainer
-            db.execute('SELECT * FROM Trainer WHERE t_id=? AND username=?',
-                       (userid, username,))
+            db.execute('SELECT * FROM Trainer WHERE username=?',
+                       (username,))
             tempList = db.fetchall()    # temp list to hold result
             if not tempList:            # if list is empty then query yielded no results
-                print('Invalid ID or Username')
+                print('Invalid Username')
             else:                       # account exists
                 # tb.fetchall() returns a list
                 # In this case it returns a list with 1 tuple
@@ -294,8 +317,6 @@ def signIn():
                                       newlist[6])
                 TrainerAuthenticated = True
             signedInSuccessfully(tempTrainer)
-
-
 
 def checkBag(trainer_id, trainer_username):
     db.execute('SELECT * FROM Trainer WHERE t_id = ? AND username = ?',
