@@ -44,8 +44,8 @@ def addPokemon(pkm):
 
 def update_trainer(t):
     with con:
-        db.execute("""UPDATE Trainer 
-                      SET level = :level, coin = :coin, vl_id = :vl_id 
+        db.execute("""UPDATE Trainer
+                      SET level = :level, coin = :coin, vl_id = :vl_id
                       WHERE t_id = :t_id""",
                     {'level': t.level, 'coin': t.coin, 'vl_id': t.vl_id})
 
@@ -62,7 +62,7 @@ def del_wild(wd):
 
 def captured_pokemon_names(trainer):
     db.execute("""
-               SELECT pname, p_id
+               SELECT pname, c_id
                FROM Captured NATURAL JOIN Pokemon
                WHERE t_id = :t_id """,
                {'t_id': trainer.t_id})
@@ -73,13 +73,13 @@ def captured_pokemon_names(trainer):
         count += 1
     return pokemon_list
 
-def update_primary(trainer, p_id):
+def update_primary(trainer, c_id):
     db.execute("""
                UPDATE Trainer
-               SET primary_cap = :pokemon
+               SET primary_cap = :c_id
                WHERE t_id = :t_id """,
-               {'pokemon': p_id, 't_id': trainer.t_id})
-    trainer.primary_cap = p_id
+               {'c_id': c_id, 't_id': trainer.t_id})
+    trainer.primary_cap = c_id
 
 def set_primary_pokemon(trainer):
     try:
@@ -100,9 +100,9 @@ def set_primary_pokemon(trainer):
                     else:
                         break
 
-                p_id = pokemon_list[op - 1][1]
+                c_id = pokemon_list[op - 1][1]
 
-                update_primary(trainer, p_id)
+                update_primary(trainer, c_id)
 
                 print("\n\tNew primary Pokemon:")
                 display_primary_pokemon_name(trainer)
@@ -122,15 +122,18 @@ def set_primary_pokemon(trainer):
         con.rollback()
         raise e
 
+
 def display_primary_pokemon_name(trainer):
     db.execute("""
-               SELECT pname
-               FROM Trainer NATURAL JOIN Pokemon
-               WHERE t_id = :t_id AND
-                     p_id = primary_cap""",
+              SELECT pname
+              FROM Trainer T JOIN Captured C ON T.t_id = C.t_id
+              JOIN Pokemon P ON P.p_id = C.p_id
+              WHERE C.t_id = :t_id AND
+              T.primary_cap = C.c_id""",
                {'t_id': trainer.t_id})
     pokemon = db.fetchone()
     print("\t\t{}\n".format(pokemon[0]))
+
 
 def add_captured(p_id, c_id, t_id):
     db.execute("""
@@ -218,14 +221,14 @@ def visitLocation(trnr):
     wildList = db.fetchall()
     for x in wildList:
         print(x)
-    
+
     # List Item
     db.execute("""SELECT iname,funct FROM Item AS i JOIN Refresh_Item AS r
                 ON i.i_id = r.i_id AND l_id = ?""", (Goto,))
     itemList = db.fetchall()
     for x in itemList:
-        print(x)    
-    
+        print(x)
+
     # List Gym
     goBack = False
     while goBack is False:
@@ -279,8 +282,8 @@ def tutorial(trnr):  # capture fist pokemon
         exit(-1)
     try:
         with con:
-            add_captured(p_id, 1, trnr.t_id)
-            trnr.primary_cap = p_id
+            add_captured(p_id, 100*trnr.t_id, trnr.t_id)
+            trnr.primary_cap = 100*trnr.t_id
     except sqlite3.IntegrityError as e:
         con.rollback()
         raise e
