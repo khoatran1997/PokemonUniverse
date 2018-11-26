@@ -148,7 +148,7 @@ class Battle:
 		r=random.randint(0,1)
 		l1=[self.dSkill1,self.dSkill2]
 		self.cHP-=self.cal(self.dPoke, l1[r], self.cPoke)
-		print("Enemy Creates Dmg:{}".format(self.cal(self.dPoke, l1[r], self.cPoke)))
+		print("Enemy creates Dmg:{}".format(self.cal(self.dPoke, l1[r], self.cPoke)))
 		
 	def hpBar(self):
 		length=50
@@ -304,7 +304,6 @@ def clear():
 con=sqlite3.connect('pokemon_world.db')
 #con=sqlite3.connect(':memory:')
 db=con.cursor()
-
 
 #===============================================================================
 # Example
