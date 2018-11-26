@@ -194,6 +194,15 @@ class Battle:
 			db.execute(""" SELECT username FROM TRAINER WHERE t_id={};
 			""".format(self.t_id_d))
 			name2=db.fetchone()[0]
+			self.cPoke.level+=1
+			db.execute("""UPDATE Captured
+			SET level={}
+			WHERE c_id={}
+			""".format(self.cPoke.level,self.c_id_c))
+			db.execute("""UPDATE Trainer
+			SET level=level+1
+			WHERE t_id={}
+			""".format(self.t_id_c))			
 			print("{} Wins. {} loses.".format(name1,name2))
 		else:
 			db.execute("""INSERT INTO Battle VALUES
@@ -207,6 +216,16 @@ class Battle:
 			""".format(self.t_id_d))
 			name2=db.fetchone()[0]
 			print("{} Wins. {} loses.".format(name2,name1))		
+			if self.mode==False:
+				self.dPoke.level+=1
+				db.execute("""UPDATE Captured
+				SET level={}
+				WHERE c_id={}
+				""".format(self.dPoke.level,self.c_id_d))
+				db.execute("""UPDATE Trainer
+				SET level=level+1
+				WHERE t_id={}
+				""".format(self.t_id_d))	
 		con.commit()		
 		return self.b_id
 	
@@ -258,7 +277,7 @@ class bPack:
 		self.num=[]
 		self.iname=[]
 		clist=db.fetchall()
-		print(clist)
+		#print(clist)
 		for line in clist:
 			self.iname.append(line[1])
 			self.num.append(line[2])
@@ -285,6 +304,8 @@ def clear():
 con=sqlite3.connect('pokemon_world.db')
 #con=sqlite3.connect(':memory:')
 db=con.cursor()
+
+
 #===============================================================================
 # Example
 #===============================================================================
