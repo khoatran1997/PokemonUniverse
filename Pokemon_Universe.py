@@ -297,7 +297,33 @@ def wild_to_captured(wildID,trainerID):     #Move wild to captured & delete wild
                    (:p_id,:c_id,:level,:t_id)"""
                    , {'p_id': pokemonID[0],    'c_id': int(maxCapturedID[0])+1,
                       'level': 1,  't_id': trainerID})
+        db.execute("SELECT type FROM Pokemon p JOIN Wild w ON p.p_id=w.p_id AND w.w_id=?",(wildID,))
+        pokemonType = db.fetchone()
+        db.execute("SELECT COUNT(s_id) FROM Skill WHERE type=?",(pokemonType[0],))
+        skillCount = db.fetchone()
+        db.execute("SELECT s_id FROM Skill WHERE type=?",(pokemonType[0],))
+        skillID = db.fetchall()
+        SkillIntList = [i[0] for i in skillID]
+        print("Int skill list",SkillIntList)
+        #8,9,10,11,12,13
+        randSkill = randint(0,len(SkillIntList)-1)
+        print("LLLLLLLLLLLLLLLL")
+        print("randSkill",randSkill)
+        db.execute("""INSERT INTO Captured_Learned_Skill VALUES
+                    (:s_id, :c_id)"""
+                    ,{'s_id':SkillIntList[randSkill],'c_id':int(maxCapturedID[0])+1})
         db.execute("DELETE FROM Wild WHERE w_id=?",(wildID,))
+    print("BREAK POINT2")
+    db.execute("SELECT * FROM Captured_Learned_Skill")
+    a = db.fetchall()
+    for x in a:
+        print(x)
+
+print("BREAK POINT1")
+db.execute("SELECT * FROM Captured_Learned_Skill")
+a = db.fetchall()
+for x in a:
+    print(x)
 
 def pickUpItem(itemID,trainerID):
     with con:
