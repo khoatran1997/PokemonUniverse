@@ -176,6 +176,12 @@ def isUniqueUsername(newusername):
         return True
     else:
         return False
+def addItemToTrainer(trnr):
+    randnum = randint(1,5)
+    with con:
+        for i in range(1,6):
+            db.execute("""INSERT INTO Own_Item VALUES (:i_id,:t_id,:num)
+                    """,{'i_id':i,'t_id':trnr.t_id,'num':randnum})
 
 def signUp():
     print('...Sign Up...')
@@ -197,6 +203,7 @@ def signUp():
             # Add new trainer to table
             tutorial(new_trainer)
             addTrainer(new_trainer)
+            addItemToTrainer(new_trainer)
             signedInSuccessfully(new_trainer)
         else:
             print("Username Already Exists. Try Another One!")
