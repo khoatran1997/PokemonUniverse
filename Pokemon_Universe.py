@@ -2,14 +2,12 @@ import sqlite3
 from trainer import Trainer
 from pokemon import Pokemon, Captured
 import sys
+from random import randint
 # from battle import Battle
 
 con=sqlite3.connect('pokemon_world.db')
 # con = sqlite3.connect(':memory:')
 db = con.cursor()
-
-db.execute("SELECT MAX(t_id) FROM Trainer")
-currentMaxTrainerID = db.fetchone()    #Use to calculate t_id when player sign up
 
 def addTrainer(trnr):
     try:
@@ -142,13 +140,6 @@ AllTrainers = getAllTrainernames()
 print("Hello Pokemon Universe")
 print(AllTrainers)
 
-'''
-MAIN MENU STARTS HERE
-MAIN MENU STARTS HERE
-MAIN MENU STARTS HERE
-
-'''
-
 def adminMenu():
     loggedIn = True
     while loggedIn:
@@ -189,6 +180,8 @@ def signUp():
     while done is False:
         username = str(input('Username: '))
         if isUniqueUsername(username):
+            db.execute("SELECT MAX(t_id) FROM Trainer")
+            currentMaxTrainerID = db.fetchone()    #Use to calculate t_id when player sign up
             userid = int(currentMaxTrainerID[0]) + 1
             db.execute('SELECT l_id, lname FROM Location WHERE lname IS NOT NULL')
             locList = db.fetchall()
@@ -220,7 +213,7 @@ def visitLocation(trnr):
         print(x)
     
     # List Item
-    db.execute("""SELECT iname,funct FROM Item AS i JOIN Refresh_Item AS r
+    db.execute("""SELECT r.i_id,iname,funct FROM Item AS i JOIN Refresh_Item AS r
                 ON i.i_id = r.i_id AND l_id = ?""", (Goto,))
     itemList = db.fetchall()
     for x in itemList:
@@ -236,23 +229,62 @@ def visitLocation(trnr):
             4. Back to Player Menu
             """)
         op = int(input('Enter Option: '))
-        if op == 1:
+        if op == 1: # capture pokemon
             wildID = int(input("Enter Wild Pokemon Id: "))
-            wild_to_captured(wildID,trnr.t_id)
-            print("Pokemon has been captured")
-            # capture pokemon
-        elif op == 2:
-            pass
-            # pick up item
+            db.execute("SELECT num FROM Own_Item WHERE i_id=4 AND t_id=?",(trnr.t_id,))
+            remainPokeBall = db.fetchone()
+            db.execute("SELECT num FROM Own_Item WHERE i_id=5 AND t_id=?",(trnr.t_id,))
+            remainMasterBall = db.fetchone()                 
+            doneTrying = False
+            while doneTrying is False:
+                print("Remaining Items: ")
+                print("1. Poke Ball Count: ",remainPokeBall[0])
+                print("2. Master Ball Count: ",remainMasterBall[0])
+                print("3. Exit Catching")
+                op=int(input("Enter Item to use: "))
+                if op == 2: #100% success rate
+                    if int(remainMasterBall[0]) == 0:
+                        print("You ran out of this item")
+                    else:
+                        decrementItemCount(5,trnr.t_id) #master ball
+                        wild_to_captured(wildID,trnr.t_id)
+                        print("Pokemon captured successfully")
+                        doneTrying = True
+                elif op == 1: #regular Poke Ball
+                    while True:
+                        if int(remainPokeBall[0]) == 0:
+                            print("You ran out of this item")
+                            doneTrying = True
+                            break
+                        else:
+                            decrementItemCount(4,trnr.t_id) #regular ball
+                            chance = randint(0,1)           #50% chance
+                            if chance == 1: #success
+                                wild_to_captured(wildID,trnr.t_id)
+                                print("Pokemon captured successfully")
+                                doneTrying = True
+                                break
+                            elif chance == 0: #fail
+                                keepTrying = str(input("Catching Attempt Failed! Continue?(Y/N)"))
+                                if keepTrying == 'Y':
+                                    continue
+                                elif keepTrying == 'N':
+                                    break
+                elif op == 3:
+                    doneTrying = True
+                else:
+                    print("Invalid Option!")    
+        elif op == 2: # pick up item
+            itemID = int(input("Enter Item Id: "))
+            pickUpItem(itemID,trnr.t_id)
+            print("Item has been picked up")
         elif op == 3:
             start_battle()
             # take over gym
         elif op == 4:
             goBack = True
 
-#wild: p_id,w_id,level,l_id
-#captured: p_id,c_id,level,t_id
-def wild_to_captured(wildID,trainerID):
+def wild_to_captured(wildID,trainerID):     #Move wild to captured & delete wild
     db.execute("SELECT p_id FROM Wild WHERE w_id=?",(wildID,))
     pokemonID = db.fetchone()
     db.execute("SELECT MAX(c_id) FROM Trainer AS t JOIN Captured AS c ON t.t_id=? AND c.t_id=?",(trainerID,trainerID,))
@@ -263,6 +295,14 @@ def wild_to_captured(wildID,trainerID):
                    , {'p_id': pokemonID[0],    'c_id': int(maxCapturedID[0])+1,
                       'level': 1,  't_id': trainerID})
         db.execute("DELETE FROM Wild WHERE w_id=?",(wildID,))
+
+def pickUpItem(itemID,trainerID):
+    with con:
+        db.execute("UPDATE Own_Item SET num = num + 1 WHERE t_id=? AND i_id=?",(trainerID,itemID))
+
+def decrementItemCount(itemID,trainerID):
+    with con:
+        db.execute("UPDATE Own_Item SET num=num-1 WHERE i_id=? AND t_id=?",(itemID,trainerID))
 
 def tutorial(trnr):  # capture fist pokemon
     print("Choose your first Pokemon:")
@@ -285,12 +325,10 @@ def tutorial(trnr):  # capture fist pokemon
         con.rollback()
         raise e
 
-
 def extractTuple_to_List(tuple):
     t_id, username, level, coin, vl_id, hl_id, primary_cap = tuple
     aNewList = [t_id, username, level, coin, vl_id, hl_id, primary_cap]
     return aNewList
-
 
 def signIn():
     TrainerAuthenticated = False
@@ -320,10 +358,20 @@ def signIn():
                 TrainerAuthenticated = True
             signedInSuccessfully(tempTrainer)
 
-def checkBag(trainer_id, trainer_username):
-    db.execute('SELECT * FROM Trainer WHERE t_id = ? AND username = ?',
-               (trainer_id, trainer_username,))
-    print(db.fetchall())
+def checkBag(trainer_object):
+    db.execute('SELECT Coin FROM Trainer WHERE t_id = ?',(trainer_object.t_id,))
+    coin = db.fetchone()
+    db.execute("""SELECT DISTINCT iname, num FROM Item i INNER JOIN Own_Item o ON i.i_id=o.i_id WHERE t_id=?
+            """,(trainer_object.t_id,))
+    itemList = db.fetchall()
+    print("Coin: ",coin[0])
+    print("Item: ")
+    for x in itemList:
+        print(x)
+
+#refresh_item: l_id, i_id
+#own_item: i_id,t_id, num
+#item: i_id, iname, price, funct
 
 def checkPokemon(trainer_id):
 	db.execute('SELECT p.pname FROM Pokemon p INNER JOIN Captured c ON p.p_id = c.p_id WHERE c.t_id = ?', (trainer_id,))
@@ -344,7 +392,7 @@ def signedInSuccessfully(trnr):
             """)
         op = int(input('Enter Option: '))
         if op == 1:
-            checkBag(trnr.t_id, trnr.username)
+            checkBag(trnr)
         elif op == 2:
             checkPokemon(trnr.t_id)
         elif op == 3:
