@@ -277,7 +277,7 @@ class bPack:
 		self.num=[]
 		self.iname=[]
 		clist=db.fetchall()
-		print(clist)
+		#print(clist)
 		for line in clist:
 			self.iname.append(line[1])
 			self.num.append(line[2])
@@ -304,6 +304,7 @@ def clear():
 con=sqlite3.connect('pokemon_world.db')
 #con=sqlite3.connect(':memory:')
 db=con.cursor()
+
 
 #===============================================================================
 # Example
