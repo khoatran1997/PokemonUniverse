@@ -317,6 +317,8 @@ def visitLocation(trnr):
             elif gymName[2] is None:
                 print("You have been promoted to gym leader")
                 update_gymleader(trnr.t_id, Goto) # if no gym leader, update to gym leader
+            elif gymName[2] == trnr.t_id:
+                print("You can't fight yourself!")
             else:
                 gbat_id = start_battle(trnr.t_id, gymName[2])
                 db.execute("SELECT outcome FROM Battle WHERE trainer_id = ? AND b_id = ?",(trnr.t_id, gbat_id))
@@ -492,6 +494,7 @@ def signedInSuccessfully(trnr):
     3. Pick primary Pokemon
     4. Visit (location)
     5. Log Out
+
             """)
         op = int(input('Enter Option: '))
         if op == 1:
