@@ -349,7 +349,11 @@ db.execute("""
 
 db.execute("""
     INSERT INTO Gym VALUES
-    ('1','Downtown','50','1');""")  # lcation_id: 50 leader: Brian
+    ('1','The Downtown Gym','1','1'),
+    ('2', 'SF Gym', '2', null),
+    ('3', 'The LAG', '4', '3'),
+    ('4', 'NYC Gym', '6', null)
+    ;""")  # lcation_id: = location, gyms are predefined.
 
 db.execute("""
     INSERT INTO Refresh_Item VALUES

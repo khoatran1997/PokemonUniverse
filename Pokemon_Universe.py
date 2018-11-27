@@ -1,6 +1,7 @@
 import sqlite3
 from trainer import Trainer
 from pokemon import Pokemon, Captured
+from battle import Battle
 import sys
 from random import randint
 # from battle import Battle
@@ -208,6 +209,13 @@ def signUp():
         else:
             print("Username Already Exists. Try Another One!")
 
+def update_gymleader(tid, lid):
+    with con:
+        db.execute("""UPDATE Gym
+                      SET leader_id = :t_id
+                      WHERE l_id = :loc_id""",
+                    {'t_id': tid, 'loc_id': lid})
+
 def visitLocation(trnr):
     db.execute('SELECT l_id, lname FROM Location WHERE lname IS NOT NULL')
     locList = db.fetchall()
@@ -232,6 +240,10 @@ def visitLocation(trnr):
     # List Gym
     goBack = False
     while goBack is False:
+        print("Gym ID | Gym Name | Leader ID | Leader Name")
+        db.execute("SELECT g.g_id, g.Gname, g.leader_id, t.username FROM gym g INNER JOIN location l ON g.l_id = l.l_id LEFT JOIN trainer t ON t.t_id = g.leader_id WHERE g.l_id = ?", (Goto,))
+        gymName = db.fetchone()
+        print(gymName)
         print("""
             1. Capture Pokemon
             2. Pick Up Item
@@ -244,7 +256,7 @@ def visitLocation(trnr):
             db.execute("SELECT num FROM Own_Item WHERE i_id=4 AND t_id=?",(trnr.t_id,))
             remainPokeBall = db.fetchone()
             db.execute("SELECT num FROM Own_Item WHERE i_id=5 AND t_id=?",(trnr.t_id,))
-            remainMasterBall = db.fetchone()                 
+            remainMasterBall = db.fetchone()
             doneTrying = False
             while doneTrying is False:
                 print("Remaining Items: ")
@@ -283,14 +295,28 @@ def visitLocation(trnr):
                 elif op == 3:
                     doneTrying = True
                 else:
-                    print("Invalid Option!")    
+                    print("Invalid Option!")
         elif op == 2: # pick up item
             itemID = int(input("Enter Item Id: "))
             pickUpItem(itemID,trnr.t_id)
             print("Item has been picked up")
         elif op == 3:
-            start_battle()
-            # take over gym
+            if gymName is None:
+                print("No Gym in this location")
+            elif gymName[2] is None:
+                print("You have been promoted to gym leader")
+                update_gymleader(trnr.t_id, Goto) # if no gym leader, update to gym leader
+            else:
+                gbat_id = start_battle(trnr.t_id, gymName[2])
+                db.execute("SELECT outcome FROM Battle WHERE trainer_id = ? AND b_id = ?",(trnr.t_id, gbat_id))
+                bat_result = db.fetchone()
+                print(bat_result)
+                if bat_result == "('W',)":
+                    print("You have been promoted to gym leader")
+                    update_gymleader(trnr.t_id, Goto) # if no gym leader, update to gym leader
+                else:
+                    print("You have lost to the gym leader")
+
         elif op == 4:
             goBack = True
 
@@ -304,7 +330,7 @@ def wild_to_captured(wildID,trainerID):     #Move wild to captured & delete wild
                    (:p_id,:c_id,:level,:t_id)"""
                    , {'p_id': pokemonID[0],    'c_id': int(maxCapturedID[0])+1,
                       'level': 1,  't_id': trainerID})
-        
+
         db.execute("SELECT s_id FROM Can_Learn WHERE p_id=?",(pokemonID[0],))
         skillID = db.fetchall()
         skillIntList = [i[0] for i in skillID]
@@ -443,11 +469,10 @@ def menu():
         print('Invalid Option!')
 
 
-def start_battle(trnr):
-    # 2 trainers
-    # db pointer
-    #
-    pass
+def start_battle(trnr1, trnr2):
+	b = Battle(trnr1, trnr2, True)
+	b.battle()
+	return b.battleResult()
 
 # MAIN
 menu()
