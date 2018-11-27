@@ -322,8 +322,13 @@ def visitLocation(trnr):
 
         elif op == 4:
             goBack = True
+#canlearn: s_id,p_id
+#skill: s_id, sname, type, damage
+#capturelearnedski: s_id, c_id
 
 def wild_to_captured(wildID,trainerID):     #Move wild to captured & delete wild
+    
+
     db.execute("SELECT p_id FROM Wild WHERE w_id=?",(wildID,))
     pokemonID = db.fetchone()
     db.execute("SELECT MAX(c_id) FROM Trainer AS t JOIN Captured AS c ON t.t_id=? AND c.t_id=?",(trainerID,trainerID,))
@@ -338,10 +343,20 @@ def wild_to_captured(wildID,trainerID):     #Move wild to captured & delete wild
         skillID = db.fetchall()
         skillIntList = [i[0] for i in skillID]
         randSkill = randint(0,len(skillIntList)-1)
+        randSkill2 = 0
+        if randSkill == 0:
+            randSkill2 = randSkill+1
+        elif randSkill == len(skillIntList)-1:
+            randSkill2 = randSkill-1
+        else:
+            randSkill2 = randSkill+1
 
         db.execute("""INSERT INTO Captured_Learned_Skill VALUES
                     (:s_id, :c_id)"""
                     ,{'s_id':skillIntList[randSkill],'c_id':int(maxCapturedID[0])+1})
+        db.execute("""INSERT INTO Captured_Learned_Skill VALUES
+                    (:s_id, :c_id)"""
+                    ,{'s_id':skillIntList[randSkill2],'c_id':int(maxCapturedID[0])+1})
         #delete wild
         db.execute("DELETE FROM Wild WHERE w_id=?",(wildID,))
 
@@ -370,6 +385,27 @@ def tutorial(trnr):  # capture fist pokemon
         with con:
             add_captured(p_id, 100*trnr.t_id, trnr.t_id)
             trnr.primary_cap = 100*trnr.t_id
+            #Khoa's Ghetto Fix
+            db.execute("SELECT p_id FROM Captured WHERE c_id=?",(trnr.primary_cap,))
+            pokemonID = db.fetchone()
+            db.execute("SELECT s_id FROM Can_Learn WHERE p_id=?",(pokemonID[0],))
+            skillID = db.fetchall()
+            skillIntList = [i[0] for i in skillID]
+            randSkill = randint(0,len(skillIntList)-1)
+            randSkill2 = 0
+            if randSkill == 0:
+                randSkill2 = randSkill+1
+            elif randSkill == len(skillIntList)-1:
+                randSkill2 = randSkill-1
+            else:
+                randSkill2 = randSkill+1
+            db.execute("""INSERT INTO Captured_Learned_Skill VALUES
+                        (:s_id, :c_id)"""
+                        ,{'s_id':skillIntList[randSkill],'c_id':100*trnr.t_id})
+            db.execute("""INSERT INTO Captured_Learned_Skill VALUES
+                        (:s_id, :c_id)"""
+                        ,{'s_id':skillIntList[randSkill2],'c_id':100*trnr.t_id})
+            #Khoa's Ghetto Fix Ends Here
     except sqlite3.IntegrityError as e:
         con.rollback()
         raise e
