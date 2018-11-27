@@ -140,6 +140,15 @@ def add_captured(p_id, c_id, t_id):
                 VALUES
                 (?, ?, ?)""", (p_id, c_id, t_id))
 
+def battle_prize(t_id, b_id):
+    db.execute("""
+                UPDATE Trainer
+                SET Coin = Coin + 5000
+                WHERE t_id = ?""", (t_id,))
+    db.execute("""
+                INSERT INTO Battle_Prize
+                VALUES (?, ? ,? ,?)""", (t_id , b_id, "Coin", 5000))
+
 AllTrainers = getAllTrainernames()
 print("Hello Pokemon Universe")
 print(AllTrainers)
@@ -210,7 +219,6 @@ def signUp():
             print("Username Already Exists. Try Another One!")
 
 def update_gymleader(tid, lid):
-    with con:
         db.execute("""UPDATE Gym
                       SET leader_id = :t_id
                       WHERE l_id = :loc_id""",
@@ -312,8 +320,13 @@ def visitLocation(trnr):
                 bat_result = db.fetchone()
                 print(bat_result)
                 if bat_result[0] == "w":
-                    print("You have been promoted to gym leader")
-                    update_gymleader(trnr.t_id, Goto) # if no gym leader, update to gym leader
+                    try:
+                        with con:
+                            print("You have been promoted to gym leader and earned 5000 coins")
+                            update_gymleader(trnr.t_id, Goto) # if no gym leader, update to gym leader
+                            battle_prize(trnr.t_id, gbat_id)
+                    except Exception as e:
+                        raise e
                 else:
                     print("You have lost to the gym leader")
 
