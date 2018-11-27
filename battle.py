@@ -332,16 +332,19 @@ def clear():
 
 
 
-con=sqlite3.connect('pokemon_world.db')
-#con=sqlite3.connect(':memory:')
-db=con.cursor()
-
 #===============================================================================
-# Example
+# #con=sqlite3.connect('pokemon_world.db')
+# con=sqlite3.connect(':memory:')
+# db=con.cursor()
+# 
+# 
+# #===============================================================================
+# # Example
+# #===============================================================================
+# for i in range(1,4):
+# 	b=Battle(1,2,True)
+# 	b.battle()
+# 	print("Battle id is {}".format(b.battleResult()))
+# 
+# con.close()
 #===============================================================================
-for i in range(1,4):
-	b=Battle(1,2,True)
-	b.battle()
-	print("Battle id is {}".format(b.battleResult()))
-
-con.close()
