@@ -93,9 +93,9 @@ class Battle:
 								#print("After: {}".format(self.cHP))
 								if self.cHP>self.cPoke.HP: 
 									self.cHP=self.cPoke.HP
-									#print("Saturation: {}".format(self.cHP))							
-							else: 
-								self.dHP+=20
+									#print("Saturation: {}".format(self.cHP))
+								else:
+									self.dHP+=20
 								if self.dHP>self.dPoke.HP: 
 									self.dHP=self.dPoke.HP
 								
@@ -308,8 +308,8 @@ db=con.cursor()
 #===============================================================================
 # Example
 #===============================================================================
-b=Battle(2,4,True)
-b.battle()
-print("Battle id is {}".format(b.battleResult()))
+#b=Battle(2,4,True)
+#b.battle()
+#print("Battle id is {}".format(b.battleResult()))
 
-con.close()
+#con.close()
