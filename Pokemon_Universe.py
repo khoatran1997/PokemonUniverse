@@ -216,7 +216,7 @@ def visitLocation(trnr):
     Goto = str(input('Enter Location ID: '))
     print('Current Location: ', Goto)
     # List Wild Pokemons
-    db.execute("""SELECT p.p_id,w_id,pname,level FROM Wild AS w JOIN Pokemon AS p
+    db.execute("""SELECT w_id,pname,level FROM Wild AS w JOIN Pokemon AS p
                 ON w.p_id = p.p_id AND l_id = ?""", (Goto,))
     wildList = db.fetchall()
     for x in wildList:
@@ -262,7 +262,7 @@ def visitLocation(trnr):
                         doneTrying = True
                 elif op == 1: #regular Poke Ball
                     while True:
-                        if int(remainPokeBall[0]) == 0:
+                        if int(remainPokeBall[0]) <= 0:
                             print("You ran out of this item")
                             doneTrying = True
                             break
@@ -387,7 +387,7 @@ def checkBag(trainer_object):
     print("Coin: ",coin[0])
     print("Item: ")
     for x in itemList:
-        print(x)
+        print('\t'x)
 
 #refresh_item: l_id, i_id
 #own_item: i_id,t_id, num
