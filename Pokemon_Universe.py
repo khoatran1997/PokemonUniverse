@@ -147,7 +147,8 @@ print(AllTrainers)
 def adminMenu():
     loggedIn = True
     while loggedIn:
-        print('...Admin Menu...')
+        print('..............................................')
+        print('...................Admin Menu.................')
         print("""
             1. View Trainer Table
             2. Remove A Trainer
@@ -185,7 +186,8 @@ def addItemToTrainer(trnr):
                     """,{'i_id':i,'t_id':trnr.t_id,'num':randnum})
 
 def signUp():
-    print('...Sign Up...')
+    print('..............................................')
+    print('....................Sign Up...................')
     done = False
     while done is False:
         username = str(input('Username: '))
@@ -222,7 +224,8 @@ def visitLocation(trnr):
     for x in locList:
         print(x)
     Goto = str(input('Enter Location ID: '))
-    print('Current Location: ', Goto)
+    print('..............................................')
+    print('.............Current Location: ', Goto,'............')
     # List Wild Pokemons
     db.execute("""SELECT w_id,pname,level FROM Wild AS w JOIN Pokemon AS p
                 ON w.p_id = p.p_id AND l_id = ?""", (Goto,))
@@ -427,13 +430,14 @@ def signedInSuccessfully(trnr):
     # After sign up or sign in, the user will be directed here
     logOut = False
     while logOut is False:
-        print('...Player Menu...')
+        print('..............................................')
+        print('..................Player Menu.................')
         print("""
-            1. Check Backpack (Items, Coin, etc)
-            2. Check Pokemons
-            3. Pick primary Pokemon
-            4. Visit (location)
-            5. Log Out
+    1. Check Backpack (Items, Coin, etc)
+    2. Check Pokemons
+    3. Pick primary Pokemon
+    4. Visit (location)
+    5. Log Out
 
             """)
         op = int(input('Enter Option: '))
@@ -450,12 +454,13 @@ def signedInSuccessfully(trnr):
 
 
 def menu():
-    print('Hello Pokemon Universe!')
-    print('.......Main Menu.......')
+    print('\t    Hello Pokemon Universe!')
+    print('..............................................')
+    print('..................Main Menu...................')
     print("""
-    1. Sign Up
-    2. Sign In
-    3. Exit
+            1. Sign Up
+            2. Sign In
+            3. Exit
         """)
     op = int(input('Enter Option: '))
     if op == 1:
@@ -463,7 +468,8 @@ def menu():
     elif op == 2:
         signIn()
     elif op == 3:
-        print('...Exiting Program...')
+        print('..............................................')
+        print('................Exiting Program...............')
         sys.exit()
     else:
         print('Invalid Option!')
