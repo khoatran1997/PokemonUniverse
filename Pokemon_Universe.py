@@ -346,6 +346,7 @@ def wild_to_captured(wildID,trainerID):     #Move wild to captured & delete wild
     pokemonID = db.fetchone()
     db.execute("SELECT MAX(c_id) FROM Trainer AS t JOIN Captured AS c ON t.t_id=? AND c.t_id=?",(trainerID,trainerID,))
     maxCapturedID = db.fetchone()
+try:
     with con:
         db.execute("""INSERT INTO Captured VALUES
                    (:p_id,:c_id,:level,:t_id)"""
@@ -372,6 +373,9 @@ def wild_to_captured(wildID,trainerID):     #Move wild to captured & delete wild
                     ,{'s_id':skillIntList[randSkill2],'c_id':int(maxCapturedID[0])+1})
         #delete wild
         db.execute("DELETE FROM Wild WHERE w_id=?",(wildID,))
+except sqlite3.IntegrityError as e:
+        con.rollback()
+        raise e
 
 def pickUpItem(itemID,trainerID):
     try:
