@@ -374,8 +374,13 @@ def wild_to_captured(wildID,trainerID):     #Move wild to captured & delete wild
         db.execute("DELETE FROM Wild WHERE w_id=?",(wildID,))
 
 def pickUpItem(itemID,trainerID):
-    with con:
-        db.execute("UPDATE Own_Item SET num = num + 1 WHERE t_id=? AND i_id=?",(trainerID,itemID))
+    try:
+        with con:
+            db.execute("UPDATE Own_Item SET num = num + 1 WHERE t_id=? AND i_id=?",(trainerID,itemID))
+            db.execute("DELETE FROM Refresh_Item WHERE i_id=? AND l_id=?",(itemID, Goto))
+            except sqlite3.IntegrityError as e:
+        con.rollback()
+        raise e
 
 def decrementItemCount(itemID,trainerID):
     with con:
