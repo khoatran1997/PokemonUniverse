@@ -333,9 +333,9 @@ def clear():
 
 
 #===============================================================================
-# #con=sqlite3.connect('pokemon_world.db')
+con=sqlite3.connect('pokemon_world.db')
 # con=sqlite3.connect(':memory:')
-# db=con.cursor()
+db=con.cursor()
 # 
 # 
 # #===============================================================================
