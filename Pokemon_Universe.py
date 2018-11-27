@@ -61,14 +61,14 @@ def del_wild(wd):
 
 def captured_pokemon_names(trainer):
     db.execute("""
-               SELECT pname, c_id
+               SELECT pname, c_id, level
                FROM Captured NATURAL JOIN Pokemon
                WHERE t_id = :t_id """,
                {'t_id': trainer.t_id})
     count = 1
     pokemon_list = db.fetchall()
     for row in pokemon_list:
-        print("\t\t{0}. {1}".format(count, row[0]))
+        print("\t\t{0}. {1}: lvl - {2}".format(count, row[0], row[2]))
         count += 1
     return pokemon_list
 
