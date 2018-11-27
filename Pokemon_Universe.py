@@ -1,6 +1,7 @@
 import sqlite3
 from trainer import Trainer
 from pokemon import Pokemon, Captured
+from battle import Battle
 import sys
 from random import randint
 # from battle import Battle
@@ -300,14 +301,22 @@ def visitLocation(trnr):
             pickUpItem(itemID,trnr.t_id)
             print("Item has been picked up")
         elif op == 3:
-        	if db.rowcount == 0:
-        		print("No Gym in this location")
-        	elif gymName[2] is None:
-        		print("You have been promoted to gym leader")
-        		update_gymleader(trnr.t_id, Goto) # if no gym leader, update to gym leader
+            if gymName is None:
+                print("No Gym in this location")
+            elif gymName[2] is None:
+                print("You have been promoted to gym leader")
+                update_gymleader(trnr.t_id, Goto) # if no gym leader, update to gym leader
+            else:
+                gbat_id = start_battle(trnr.t_id, gymName[2])
+                db.execute("SELECT outcome FROM Battle WHERE trainer_id = ? AND b_id = ?",(trnr.t_id, gbat_id))
+                bat_result = db.fetchone()
+                print(bat_result)
+                if bat_result == "('W',)":
+                    print("You have been promoted to gym leader")
+                    update_gymleader(trnr.t_id, Goto) # if no gym leader, update to gym leader
+                else:
+                    print("You have lost to the gym leader")
 
-            	#start_battle()
-            # take over gym
         elif op == 4:
             goBack = True
 
@@ -460,11 +469,10 @@ def menu():
         print('Invalid Option!')
 
 
-def start_battle(trnr):
-    # 2 trainers
-    # db pointer
-    #
-    pass
+def start_battle(trnr1, trnr2):
+	b = Battle(trnr1, trnr2, True)
+	b.battle()
+	return b.battleResult()
 
 # MAIN
 menu()
