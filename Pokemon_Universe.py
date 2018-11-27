@@ -413,7 +413,7 @@ def checkBag(trainer_object):
     print("Coin: ",coin[0])
     print("Item: ")
     for x in itemList:
-        print('\t'x)
+        print('\t',x)
 
 #refresh_item: l_id, i_id
 #own_item: i_id,t_id, num
