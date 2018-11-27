@@ -1,7 +1,6 @@
 import os
 import random
 import sqlite3
-from _ast import Num
 
 class Battle:
 	def __init__(self,t_id_c,t_id_d,mode):
@@ -24,6 +23,7 @@ class Battle:
 		self.dSkill2 = bSkill(self.dPoke.s2_id)
 		self.cHP = self.cPoke.HP
 		self.dHP = self.dPoke.HP
+		self.header()
 		
 	def battle(self):
 		while self.cHP>0 and self.dHP>0:
@@ -250,7 +250,14 @@ class Battle:
 				else:
 					print("Error: Wrong Input")
 				
-		
+	def header(self):
+		db.execute(""" SELECT username FROM TRAINER WHERE t_id={};
+		""".format(self.t_id_c))
+		name1=db.fetchone()[0]
+		db.execute(""" SELECT username FROM TRAINER WHERE t_id={};
+		""".format(self.t_id_d))
+		name2=db.fetchone()[0]	
+		print("Battle: {} VS {}".format(name1,name2))
 		
 	
 class bCaptured:
@@ -325,8 +332,8 @@ def clear():
 
 
 
-#con=sqlite3.connect('pokemon_world.db')
-con=sqlite3.connect(':memory:')
+con=sqlite3.connect('pokemon_world.db')
+#con=sqlite3.connect(':memory:')
 db=con.cursor()
 
 #===============================================================================
