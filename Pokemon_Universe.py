@@ -208,11 +208,12 @@ def signUp():
         else:
             print("Username Already Exists. Try Another One!")
 
-def update_gymleader(tid):
+def update_gymleader(tid, lid):
     with con:
         db.execute("""UPDATE Gym
-                      SET leader_id = :t_id""",
-                    {'t_id': tid})
+                      SET leader_id = :t_id
+                      WHERE l_id = :loc_id""",
+                    {'t_id': tid, 'loc_id': lid})
 
 def visitLocation(trnr):
     db.execute('SELECT l_id, lname FROM Location WHERE lname IS NOT NULL')
@@ -303,7 +304,7 @@ def visitLocation(trnr):
         		print("No Gym in this location")
         	elif gymName[2] is None:
         		print("You have been promoted to gym leader")
-        		update_gymleader(trnr.t_id) # if no gym leader, update to gym leader
+        		update_gymleader(trnr.t_id, Goto) # if no gym leader, update to gym leader
 
             	#start_battle()
             # take over gym
