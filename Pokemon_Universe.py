@@ -311,7 +311,7 @@ def visitLocation(trnr):
                 db.execute("SELECT outcome FROM Battle WHERE trainer_id = ? AND b_id = ?",(trnr.t_id, gbat_id))
                 bat_result = db.fetchone()
                 print(bat_result)
-                if bat_result == "('W',)":
+                if bat_result[0] == "w":
                     print("You have been promoted to gym leader")
                     update_gymleader(trnr.t_id, Goto) # if no gym leader, update to gym leader
                 else:
