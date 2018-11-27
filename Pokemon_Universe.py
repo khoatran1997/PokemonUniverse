@@ -208,6 +208,12 @@ def signUp():
         else:
             print("Username Already Exists. Try Another One!")
 
+def update_gymleader(tid):
+    with con:
+        db.execute("""UPDATE Gym
+                      SET leader_id = :t_id""",
+                    {'t_id': tid})
+
 def visitLocation(trnr):
     db.execute('SELECT l_id, lname FROM Location WHERE lname IS NOT NULL')
     locList = db.fetchall()
@@ -232,6 +238,10 @@ def visitLocation(trnr):
     # List Gym
     goBack = False
     while goBack is False:
+        print("Gym ID | Gym Name | Leader ID | Leader Name")
+        db.execute("SELECT g.g_id, g.Gname, g.leader_id, t.username FROM gym g INNER JOIN location l ON g.l_id = l.l_id LEFT JOIN trainer t ON t.t_id = g.leader_id WHERE g.l_id = ?", (Goto,))
+        gymName = db.fetchone()
+        print(gymName)
         print("""
             1. Capture Pokemon
             2. Pick Up Item
@@ -289,7 +299,13 @@ def visitLocation(trnr):
             pickUpItem(itemID,trnr.t_id)
             print("Item has been picked up")
         elif op == 3:
-            start_battle()
+        	if db.rowcount == 0:
+        		print("No Gym in this location")
+        	elif gymName[2] == 'None':
+        		print("You have been promoted to gym leader")
+        		update_gymleader(trnr.t_id) # if no gym leader, update to gym leader
+
+            	#start_battle()	
             # take over gym
         elif op == 4:
             goBack = True
