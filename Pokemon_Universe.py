@@ -254,7 +254,7 @@ def visitLocation(trnr):
             db.execute("SELECT num FROM Own_Item WHERE i_id=4 AND t_id=?",(trnr.t_id,))
             remainPokeBall = db.fetchone()
             db.execute("SELECT num FROM Own_Item WHERE i_id=5 AND t_id=?",(trnr.t_id,))
-            remainMasterBall = db.fetchone()                 
+            remainMasterBall = db.fetchone()
             doneTrying = False
             while doneTrying is False:
                 print("Remaining Items: ")
@@ -293,7 +293,7 @@ def visitLocation(trnr):
                 elif op == 3:
                     doneTrying = True
                 else:
-                    print("Invalid Option!")    
+                    print("Invalid Option!")
         elif op == 2: # pick up item
             itemID = int(input("Enter Item Id: "))
             pickUpItem(itemID,trnr.t_id)
@@ -301,11 +301,11 @@ def visitLocation(trnr):
         elif op == 3:
         	if db.rowcount == 0:
         		print("No Gym in this location")
-        	elif gymName[2] == 'None':
+        	elif gymName[2] is None:
         		print("You have been promoted to gym leader")
         		update_gymleader(trnr.t_id) # if no gym leader, update to gym leader
 
-            	#start_battle()	
+            	#start_battle()
             # take over gym
         elif op == 4:
             goBack = True
@@ -320,7 +320,7 @@ def wild_to_captured(wildID,trainerID):     #Move wild to captured & delete wild
                    (:p_id,:c_id,:level,:t_id)"""
                    , {'p_id': pokemonID[0],    'c_id': int(maxCapturedID[0])+1,
                       'level': 1,  't_id': trainerID})
-        
+
         db.execute("SELECT s_id FROM Can_Learn WHERE p_id=?",(pokemonID[0],))
         skillID = db.fetchall()
         skillIntList = [i[0] for i in skillID]
