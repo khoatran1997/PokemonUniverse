@@ -1,10 +1,6 @@
-from skill import Skill
-from pokemon import Captured
-from item import Pocket
 import os
 import random
 import sqlite3
-from _ast import Num
 
 class Battle:
 	def __init__(self,t_id_c,t_id_d,mode):
@@ -27,6 +23,7 @@ class Battle:
 		self.dSkill2 = bSkill(self.dPoke.s2_id)
 		self.cHP = self.cPoke.HP
 		self.dHP = self.dPoke.HP
+		self.header()
 		
 	def battle(self):
 		while self.cHP>0 and self.dHP>0:
@@ -93,9 +90,9 @@ class Battle:
 								#print("After: {}".format(self.cHP))
 								if self.cHP>self.cPoke.HP: 
 									self.cHP=self.cPoke.HP
-									#print("Saturation: {}".format(self.cHP))
-								else:
-									self.dHP+=20
+									#print("Saturation: {}".format(self.cHP))							
+							else: 
+								self.dHP+=20
 								if self.dHP>self.dPoke.HP: 
 									self.dHP=self.dPoke.HP
 								
@@ -204,6 +201,7 @@ class Battle:
 			WHERE t_id={}
 			""".format(self.t_id_c))			
 			print("{} Wins. {} loses.".format(name1,name2))
+			self.evo(self.cPoke)
 		else:
 			db.execute("""INSERT INTO Battle VALUES
 			('{1}','{2}','w'),
@@ -226,8 +224,41 @@ class Battle:
 				SET level=level+1
 				WHERE t_id={}
 				""".format(self.t_id_d))	
+				self.evo(self.dPoke)
 		con.commit()		
 		return self.b_id
+	
+	def evo(self,poke):
+		if poke.r_lv== None: return
+		if poke.level>= poke.r_lv:
+			print("{} is evolvong!".format(poke.pname))
+			while True:
+				ch=input("Do you want to continue?(y/n)")
+				if ch=='y' or ch=='Y':
+					db.execute("""UPDATE Captured
+					SET p_id={}
+					WHERE c_id={};""".format(poke.r_id,poke.c_id))
+					db.execute("""SELECT pname
+					FROM Pokemon WHERE p_id={}""".format(poke.r_id))
+					clist=db.fetchone()
+					name=clist[0]
+					print("Congratulations! Your {} evolved into {}".format(poke.pname,name))
+					#print("Pokemon:{} {}\n".format(self.p_id,clist))
+					break
+				elif ch=='n' or ch=='N':
+					break
+				else:
+					print("Error: Wrong Input")
+				
+	def header(self):
+		db.execute(""" SELECT username FROM TRAINER WHERE t_id={};
+		""".format(self.t_id_c))
+		name1=db.fetchone()[0]
+		db.execute(""" SELECT username FROM TRAINER WHERE t_id={};
+		""".format(self.t_id_d))
+		name2=db.fetchone()[0]	
+		print("Battle: {} VS {}".format(name1,name2))
+		
 	
 class bCaptured:
 	def __init__(self,c_id):
@@ -253,7 +284,7 @@ class bCaptured:
 		bHP=clist[1]
 		bATK=clist[2]
 		self.r_id=clist[3]
-		self.r_id=clist[4]
+		self.r_lv=clist[4]
 		self.ATK=int(bATK*(1+1*self.level))
 		self.HP=int(bHP*(1+0.2*self.level))
 		self.type=clist[5]
@@ -308,8 +339,9 @@ db=con.cursor()
 #===============================================================================
 # Example
 #===============================================================================
-#b=Battle(2,4,True)
-#b.battle()
-#print("Battle id is {}".format(b.battleResult()))
+for i in range(1,4):
+	b=Battle(1,2,True)
+	b.battle()
+	print("Battle id is {}".format(b.battleResult()))
 
-#con.close()
+con.close()
