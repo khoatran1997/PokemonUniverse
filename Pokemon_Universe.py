@@ -309,7 +309,7 @@ def visitLocation(trnr):
                     print("Invalid Option!")
         elif op == 2: # pick up item
             itemID = int(input("Enter Item Id: "))
-            pickUpItem(itemID,trnr.t_id)
+            pickUpItem(itemID,trnr.t_id, Goto)
             print("Item has been picked up")
         elif op == 3:
             if gymName is None:
@@ -342,7 +342,7 @@ def visitLocation(trnr):
 #capturelearnedski: s_id, c_id
 
 def wild_to_captured(wildID,trainerID):     #Move wild to captured & delete wild
-    
+
 
     db.execute("SELECT p_id FROM Wild WHERE w_id=?",(wildID,))
     pokemonID = db.fetchone()
@@ -375,13 +375,14 @@ def wild_to_captured(wildID,trainerID):     #Move wild to captured & delete wild
         #delete wild
         db.execute("DELETE FROM Wild WHERE w_id=?",(wildID,))
 
-def pickUpItem(itemID,trainerID):
+def pickUpItem(itemID,trainerID, Goto):
     try:
-        with con:
-            db.execute("UPDATE Own_Item SET num = num + 1 WHERE t_id=? AND i_id=?",(trainerID,itemID))
-            db.execute("DELETE FROM Refresh_Item WHERE i_id=? AND l_id=?",(itemID, Goto))
+        db.execute("begin")
+        db.execute("UPDATE Own_Item SET num = num + 1 WHERE t_id=? AND i_id=?",(trainerID,itemID))
+        db.execute("DELETE FROM Refresh_Item WHERE i_id=? AND l_id=?",(itemID, Goto))
+        db.execute("commit")
     except sqlite3.IntegrityError as e:
-        con.rollback()
+        db.execute("rollback")
         raise e
 
 def decrementItemCount(itemID,trainerID):
