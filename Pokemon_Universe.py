@@ -223,6 +223,7 @@ def signUp():
             print("Username Already Exists. Try Another One!")
 
 def update_gymleader(tid, lid):
+    with con:    
         db.execute("""UPDATE Gym
                       SET leader_id = :t_id
                       WHERE l_id = :loc_id""",
